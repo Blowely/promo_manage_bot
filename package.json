@@ -1,0 +1,26 @@
+{
+  "name": "promo_manage_bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blowely/promo_manage_bot.git"
+  },
+  "keywords": [
+    "bot",
+    "telegramm",
+    "tg",
+    "promo",
+    "promotion"
+  ],
+  "author": "Andrey Maryashin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Blowely/promo_manage_bot/issues"
+  },
+  "homepage": "https://github.com/Blowely/promo_manage_bot#readme"
+}
