@@ -48,6 +48,5 @@ bot.on('callback_query', async (msg) => {
     const command = msg.data;
     const chatId = msg.message.chat.id;
 
-    await bot.sendMessage(chatId, command);
     await commandHandler(command, chatId);
 })

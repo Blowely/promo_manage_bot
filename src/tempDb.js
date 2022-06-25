@@ -1,8 +1,10 @@
-const CHANNELS_INFO = {
+const DATABASE = {
     uuidUser: {
-        magicHands: {
+        '92huf9-sdkfj-23dj23jd-ewdi-0328fh4': {
+            name: 'Магические ручки',
+            id: '92huf9-sdkfj-23dj23jd-ewdi-0328fh4',
             freeTime: {
-                1200: {
+                morning: {
                     name: "",
                     phone: "",
                     email: "",
@@ -12,7 +14,7 @@ const CHANNELS_INFO = {
                         date: ''
                     }
                 },
-                1300: {
+                day: {
                     name: "",
                     phone: "",
                     email: "",
@@ -22,7 +24,7 @@ const CHANNELS_INFO = {
                         date: ''
                     }
                 },
-                1500: {
+                morning: {
                     name: "",
                     phone: "",
                     email: "",
@@ -66,7 +68,9 @@ const CHANNELS_INFO = {
                 }
             }
         },
-        myAuto: {
+        '934r4f-fwefew-23e23-wefwef-fergreg': {
+            name: 'Мой автомобиль',
+            id: '934r4f-fwefew-23e23-wefwef-fergreg',
             freeTimePlaces: {
                 '1200': '12:00',
                 '1300': '13:00',
@@ -75,3 +79,5 @@ const CHANNELS_INFO = {
         }
     }
 }
+
+module.exports.DATABASE = DATABASE;
