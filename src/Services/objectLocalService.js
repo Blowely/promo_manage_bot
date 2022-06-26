@@ -74,6 +74,19 @@ const view_total = async (chatId, bot) => {
         "Комментарий - нет\n", options.TOTAL_INFO);
 }
 
+const sendSuccessResult = async (chatId, bot) => {
+    await bot.sendMessage(chatId, 'Пост успешно занят!');
+    await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
+        "Дата: 2022-06-26 \n" +
+        "\n" +
+        "#1) 8:00 - занято\n" +
+        "#2) 12:00 - 17:00 - свободно\n" +
+        "#3) 17:00 - 22:00 - свободно\n" +
+        "\n" +
+        "Выберите время, чтобы занять его", options.RESULT_INFO);
+}
+
+
 
 
 module.exports.startBot = startBot;
@@ -83,3 +96,4 @@ module.exports.selectChannel = selectChannel;
 module.exports.selectPlace = selectPlace;
 module.exports.selectTime = selectTime;
 module.exports.view_total = view_total;
+module.exports.sendSuccessResult = sendSuccessResult;
