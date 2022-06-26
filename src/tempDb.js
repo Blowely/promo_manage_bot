@@ -3,67 +3,119 @@ const DATABASE = {
         '92huf9-sdkfj-23dj23jd-ewdi-0328fh4': {
             name: 'Магические ручки',
             id: '92huf9-sdkfj-23dj23jd-ewdi-0328fh4',
-            freeTime: {
-                morning: {
-                    name: "",
-                    phone: "",
-                    email: "",
-                    isPaid: false,
-                    payment: {
-                        method: '',
-                        date: ''
+            places: {
+                today: {
+                    morning: {
+                        name: "Bogdan Durmanchaev",
+                        phone: "+79203240232",
+                        email: "bogdan@google.com",
+                        is_occupied: true,
+                        promo_time: '08:00',
+                        isPaid: false,
+                        payment: {
+                            method: 'QIWI',
+                            date: '1231213321' || '2022-05-23'
+                        }
+                    },
+                    day: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
+                    },
+                    evening: {
+                        name: "Maks Zolin",
+                        phone: "+79204565656",
+                        email: "maks@google.com",
+                        is_occupied: true,
+                        promo_time: '18:00',
+                        isPaid: true,
+                        payment: {
+                            method: 'QIWI',
+                            date: '1231213321' || '2022-05-23'
+                        }
                     }
                 },
-                day: {
-                    name: "",
-                    phone: "",
-                    email: "",
-                    isPaid: false,
-                    payment: {
-                        method: '',
-                        date: ''
+                tomorrow: {
+                    morning: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
+                    },
+                    day: {
+                        name: "Maks Zolin",
+                        phone: "+79204565656",
+                        email: "maks@google.com",
+                        is_occupied: true,
+                        promo_time: '14:00',
+                        isPaid: true,
+                        payment: {
+                            method: 'QIWI',
+                            date: '1231213321' || '2022-05-23'
+                        }
+                    },
+                    evening: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
                     }
                 },
-                morning: {
-                    name: "",
-                    phone: "",
-                    email: "",
-                    isPaid: false,
-                    payment: {
-                        method: '',
-                        date: ''
-                    }
-                },
-            },
-            occupiedTime: {
-                1400: {
-                    name: "Bogdan Durmanchaev",
-                    phone: "+79203240232",
-                    email: "bogdan@google.com",
-                    isPaid: false,
-                    payment: {
-                        method: 'QIWI',
-                        date: '1231213321' || '2022-05-23'
-                    }
-                },
-                1600: {
-                    name: "Maks Zolin",
-                    phone: "+79204565656",
-                    email: "maks@google.com",
-                    isPaid: true,
-                    payment: {
-                        method: 'QIWI',
-                        date: '1231213321' || '2022-05-23'
-                    }
-                },
-                1700: {
-                    name: "Maks Zolin",
-                    phone: "+79204565656",
-                    email: "maks@google.com",
-                    isPaid: true,
-                    payment: {
-                        method: 'QIWI',
-                        date: '1231213321' || '2022-05-23'
+                next_tomorrow: {
+                    morning: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
+                    },
+                    day: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
+                    },
+                    evening: {
+                        name: "",
+                        phone: "",
+                        email: "",
+                        is_occupied: false,
+                        promo_time: '',
+                        isPaid: false,
+                        payment: {
+                            method: '',
+                            date: ''
+                        }
                     }
                 }
             }
