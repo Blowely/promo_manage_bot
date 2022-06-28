@@ -1,3 +1,3 @@
 const {Sequelize} = require('sequelize');
 
-module.exports = new Sequelize('tgBotDB', 'root', 'root', {host: '81.163.24.30', port: '6432', dialect: "postgres"})
+module.exports = new Sequelize('moviefokl5', 'moviefokl5', 'Dfkz1947', {host: 'pg2.sweb.ru', port: '5432', dialect: "postgres"})

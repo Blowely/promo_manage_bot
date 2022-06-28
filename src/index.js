@@ -73,8 +73,8 @@ const start = async () => {
     console.log('123');
 
     try {
-        /*await sequelize.authenticate();
-        await sequelize.sync();*/
+        await sequelize.authenticate();
+        await sequelize.sync();
     } catch (e) {
         console.log('Подключение к бд сломалось ', e);
     }
