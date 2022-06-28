@@ -24,12 +24,12 @@ const commandHandler = async (command, chatId) => {
     try {
         switch (command) {
             case "/start": {
-                await UserModel.create({chatId})
+                //await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON())).catch((err) => console.log('err =', err))
                 await startBot(chatId, bot);
                 break;
             }
             case "/info": {
-                //const user = await UserModel.findOne({chatId})
+                const user = await UserModel.findOne({chatId})
                 await bot.sendMessage(chatId, 'Айди твоего чата' + user.chatId)
                 break;
             }
@@ -65,7 +65,7 @@ const commandHandler = async (command, chatId) => {
                 return;
         }
     } catch (e) {
-        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!');
+        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
     }
 
 }
@@ -100,7 +100,7 @@ const start = async () => {
 
             await commandHandler(TG_COMMANDS[text], chatId);
         } catch (e) {
-            return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!');
+            return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
         }
     })
 
