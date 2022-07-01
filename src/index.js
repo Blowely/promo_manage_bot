@@ -24,7 +24,7 @@ const commandHandler = async (command, chatId) => {
     try {
         switch (command) {
             case "/start": {
-                //await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON())).catch((err) => console.log('err =', err))
+                await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON())).catch((err) => console.log('err =', err))
                 await startBot(chatId, bot);
                 break;
             }
