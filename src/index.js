@@ -3,6 +3,8 @@ const sequelize = require('./db');
 const UserModel = require('./models').User;
 
 const {checkCorrectTime} = require("./utils");
+const {addRemoteChannel} = require("./Services/objectRemoteService");
+const {getRemoteChannels} = require("./Services/objectRemoteService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -26,12 +28,11 @@ const commandHandler = async (command, chatId) => {
             case "/start": {
                 await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON()))
                     .catch((err) => console.log('err =', err))
-                await UserModel.findOne({chatId}).INSERT()
-                await startBot(chatId, bot);
+                await startBot(chatId, bot, UserModel);
                 break;
             }
             case "/info": {
-                const user = await UserModel.findOne({chatId})
+
                 await bot.sendMessage(chatId, 'Айди твоего чата' + user.chatId)
                 break;
             }
@@ -91,6 +92,10 @@ const start = async () => {
         const chatId = msg.chat.id;
 
         try {
+            if (store.state_pos === 2) {
+                return addRemoteChannel(text, chatId, UserModel);
+            }
+
             if (store.state_pos === 5) {
                 return checkCorrectTime(text) ? await commandHandler('/view_total', chatId) : bot.sendMessage(chatId,
                     'Не верно указано время, укажи время в промежутке: от 07:00 до 12:00');
