@@ -1,5 +1,6 @@
 const options = require('../options');
 const {getRemoteChannels} = require("./objectRemoteService");
+const {ARRAY} = require("sequelize");
 const DATABASE = require('../tempDb').DATABASE;
 const store = require('../store').store;
 
@@ -9,26 +10,28 @@ const startBot = async (chatId, bot, UserModel) => {
         options.START_OPTIONS);
     //await bot.sendSticker(chatId, 'https://stickers.wiki/static/stickers/robocatbot/file_46751.gif');
 
-    const channels = getRemoteChannels(chatId, UserModel).then(res => res);
-    console.log('channels =', await channels);
-    /*if (Object.keys(chj).length > 0) {
-        console.log('dsds');
-        for (const channel of channels) {
+    getRemoteChannels(chatId, UserModel).then(res => {
+        const channels = JSON.parse(res);
+
+        if (channels.length > 0) {
+            for (const channel of channels) {
+                options.CHANNELS.reply_markup = JSON.stringify({
+                    inline_keyboard: [
+                        ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
+                        [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.id})}]
+                    ]
+                });
+            }
+
             options.CHANNELS.reply_markup = JSON.stringify({
                 inline_keyboard: [
                     ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                    [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.id})}]
+                    [{text: 'Назад', callback_data: 'cancel'}]
                 ]
             });
         }
+    });
 
-        options.CHANNELS.reply_markup = JSON.stringify({
-            inline_keyboard: [
-                ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                [{text: 'Назад', callback_data: 'cancel'}]
-            ]
-        });
-    }*/
 }
 
 const getMyChannels = async (chatId, bot) => {
