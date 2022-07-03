@@ -32,7 +32,6 @@ const commandHandler = async (command, chatId) => {
                 break;
             }
             case "/info": {
-
                 await bot.sendMessage(chatId, 'Айди твоего чата' + user.chatId)
                 break;
             }

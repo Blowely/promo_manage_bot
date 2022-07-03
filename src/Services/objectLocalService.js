@@ -9,9 +9,9 @@ const startBot = async (chatId, bot, UserModel) => {
         options.START_OPTIONS);
     //await bot.sendSticker(chatId, 'https://stickers.wiki/static/stickers/robocatbot/file_46751.gif');
 
-    const channels = getRemoteChannels(chatId, UserModel);
-    console.log('channels =', channels);
-    /*if (channels.length > 0) {
+    const channels = getRemoteChannels(chatId, UserModel).then(res => res);
+    console.log('channels =', await channels);
+    /*if (Object.keys(chj).length > 0) {
         console.log('dsds');
         for (const channel of channels) {
             options.CHANNELS.reply_markup = JSON.stringify({

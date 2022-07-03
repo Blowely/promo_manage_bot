@@ -4,10 +4,8 @@ const {getDataUser} = require("./objectService");
 const addRemoteChannel = (name, chatId, UserModel) => {
     const condition = {chatId: chatId};
 
-    upsert(name, condition, UserModel).then((res) => console.log('success', res.toJSON()))
+    upsert(name, condition, UserModel).then((res) => console.log('success', JSON.stringify(res)))
         .catch((err) => console.log('err =', err));
-
-    console.log('UserModel.ch =',UserModel.findOne({where: {chatId: chatId}}).channels);
 }
 
 const getRemoteChannel = (chatId, UserModel) => {
@@ -15,10 +13,12 @@ const getRemoteChannel = (chatId, UserModel) => {
 }
 
 const getRemoteChannels = (chatId, UserModel) => {
-    getDataUser(chatId, UserModel).then(user => {
-        console.log('user.channels =', user.channels);
+    return getDataUser(chatId, UserModel).then(async user => {
+        const users = await UserModel.findAll();
+        console.log(users.every(user => user instanceof UserModel)); // true
+        console.log("All users:", JSON.stringify(users, null, 2));
 
-        //return JSON.parse(user.channels).split(',') || JSON.parse(user.channels);
+        return JSON.parse(user.channels);
     })
 
 }
