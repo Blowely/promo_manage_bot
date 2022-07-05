@@ -1,11 +1,13 @@
 const {upsert} = require("./objectService");
 const {getDataUser} = require("./objectService");
 
-const addRemoteChannel = (name, chatId, UserModel) => {
+const addRemoteChannel = (name, chatId, UserModel, bot) => {
     const condition = {chatId: chatId};
 
-    upsert(name, condition, UserModel).then((res) => console.log('success', JSON.stringify(res)))
-        .catch((err) => console.log('err =', err));
+    upsert(name, condition, UserModel).then((res) => {
+        console.log('success', JSON.stringify(res));
+        bot.sen
+    }).catch((err) => console.log('err =', err));
 }
 
 const getRemoteChannel = (chatId, UserModel) => {

@@ -31,6 +31,10 @@ const commandHandler = async (command, chatId) => {
                 await startBot(chatId, bot, UserModel);
                 break;
             }
+            case "/menu": {
+                await startBot(chatId, bot, UserModel);
+                break;
+            }
             case "/info": {
                 await bot.sendMessage(chatId, 'Айди твоего чата' + user.chatId)
                 break;
@@ -92,7 +96,10 @@ const start = async () => {
 
         try {
             if (store.state_pos === 2) {
-                return addRemoteChannel(text, chatId, UserModel);
+                addRemoteChannel(text, chatId, UserModel);
+                await bot.sendMessage(chatId, 'Канал успешно добавлен');
+                await commandHandler('/start', chatId);
+                return;
             }
 
             if (store.state_pos === 5) {
@@ -101,7 +108,7 @@ const start = async () => {
             }
 
             if (!TG_COMMANDS.hasOwnProperty(text)) {
-                bot.sendMessage(chatId, 'Я тебя не понимаю');
+                await bot.sendMessage(chatId, 'Я тебя не понимаю');
                 return;
             }
 

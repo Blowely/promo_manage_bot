@@ -34,6 +34,10 @@ const startBot = async (chatId, bot, UserModel) => {
 
 }
 
+const getMenu = () => {
+
+}
+
 const getMyChannels = async (chatId, bot) => {
     store.state_pos = 2;
     await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
