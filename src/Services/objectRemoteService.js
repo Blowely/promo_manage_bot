@@ -6,7 +6,7 @@ const addRemoteChannel = (name, chatId, UserModel, bot) => {
 
     upsert(name, condition, UserModel).then((res) => {
         console.log('success', JSON.stringify(res));
-        bot.sen
+        bot.sendMessage(chatId, 'Канал успешно добавлен');
     }).catch((err) => console.log('err =', err));
 }
 

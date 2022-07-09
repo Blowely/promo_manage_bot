@@ -10,6 +10,7 @@ const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
 
 const startBot = require('./Services/objectLocalService').startBot;
+const getMenu = require('./Services/objectLocalService').getMenu;
 const getMyChannels = require('./Services/objectLocalService').getMyChannels;
 const addChannel = require('./Services/objectLocalService').addChannel;
 const selectChannel = require('./Services/objectLocalService').selectChannel;
@@ -32,7 +33,7 @@ const commandHandler = async (command, chatId) => {
                 break;
             }
             case "/menu": {
-                await startBot(chatId, bot, UserModel);
+                await getMenu(chatId, bot, UserModel);
                 break;
             }
             case "/info": {
@@ -76,8 +77,6 @@ const commandHandler = async (command, chatId) => {
 
 }
 const start = async () => {
-    console.log('123');
-
     try {
         await sequelize.authenticate();
         await sequelize.sync();
@@ -96,9 +95,8 @@ const start = async () => {
 
         try {
             if (store.state_pos === 2) {
-                addRemoteChannel(text, chatId, UserModel);
-                await bot.sendMessage(chatId, 'Канал успешно добавлен');
-                await commandHandler('/start', chatId);
+                addRemoteChannel(text, chatId, UserModel, bot);
+                await commandHandler('/menu', chatId);
                 return;
             }
 

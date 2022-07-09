@@ -1,16 +1,22 @@
 const options = require('../options');
 const {getRemoteChannels} = require("./objectRemoteService");
-const {ARRAY} = require("sequelize");
-const DATABASE = require('../tempDb').DATABASE;
 const store = require('../store').store;
+const Channel = require("../models").Channel;;
 
 const startBot = async (chatId, bot, UserModel) => {
     store.state_pos = 1;
     await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
         options.START_OPTIONS);
+    const users = await UserModel.findAll();
+    console.log(users.every(user => user instanceof UserModel)); // true
+    console.log("All users:", JSON.stringify(users, null, 2));
+
+    const channels = await Channel.findAll();
+    console.log(channels.every(channel => channel instanceof Channel)); // true
+    console.log("All channels:", JSON.stringify(channels, null, 2));
     //await bot.sendSticker(chatId, 'https://stickers.wiki/static/stickers/robocatbot/file_46751.gif');
 
-    getRemoteChannels(chatId, UserModel).then(res => {
+    /*getRemoteChannels(chatId, UserModel).then(res => {
         const channels = JSON.parse(res);
 
         if (channels.length > 0) {
@@ -30,12 +36,14 @@ const startBot = async (chatId, bot, UserModel) => {
                 ]
             });
         }
-    });
+    });*/
 
 }
 
-const getMenu = () => {
-
+const getMenu = async (chatId, bot, UserModel) => {
+    store.state_pos = 1;
+    await bot.sendMessage(chatId, '',
+        options.START_OPTIONS);
 }
 
 const getMyChannels = async (chatId, bot) => {
@@ -99,6 +107,7 @@ const sendSuccessResult = async (chatId, bot) => {
 
 
 module.exports.startBot = startBot;
+module.exports.getMenu = getMenu;
 module.exports.getMyChannels = getMyChannels;
 module.exports.addChannel = addChannel;
 module.exports.selectChannel = selectChannel;
