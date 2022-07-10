@@ -2,8 +2,8 @@ const {v4} = require("uuid");
 const Channel = require("../models").Channel;
 
 const upsert = async (name, condition, Model) => {
-    const uuid = v4();
-    const chatId = condition.chatId;
+    const chatId = v4();
+    //const chatId = condition.chatId;
     const user = await Model.findOne({ where: condition });
     if (!user) {
         console.log('Пользователь не найден!')
@@ -14,16 +14,25 @@ const upsert = async (name, condition, Model) => {
         console.log('here');
         const splitStr = user.channels.split(',');
 
-        data = JSON.stringify('' + user.channels + ',' + uuid + '');
+        data = '' + user.channels + ',' + chatId + '';
     } else {
         console.log('else')
-        data = JSON.stringify('' + uuid + '');
+        data = '' + chatId + '';
     }
     console.log('data =', data);
 
     await Model.update({channels: data}, {where: condition});
 
-    return await Channel.create({uuid, name});
+    return await Channel.create({chatId, name});
+
+    /*Model.destroy({
+        where: {},
+        truncate: true
+    })
+    return Channel.destroy({
+        where: {},
+        truncate: true
+    })*/
 }
 
 function getDataUser(chatId, UserModel) {

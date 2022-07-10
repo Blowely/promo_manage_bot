@@ -5,6 +5,7 @@ const UserModel = require('./models').User;
 const {checkCorrectTime} = require("./utils");
 const {addRemoteChannel} = require("./Services/objectRemoteService");
 const {getRemoteChannels} = require("./Services/objectRemoteService");
+const {User} = require("./models");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -27,8 +28,13 @@ const commandHandler = async (command, chatId) => {
     try {
         switch (command) {
             case "/start": {
-                await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON()))
-                    .catch((err) => console.log('err =', err))
+                console.log('UserModel.findOne({where: {chatId: chatId}} =',UserModel.findOne({where: {chatId: chatId}}));
+                const isUser = UserModel.findOne({where: {chatId: chatId}});
+                if (isUser) {
+                    await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON()))
+                        .catch((err) => console.log('err =', err))
+                }
+
                 await startBot(chatId, bot, UserModel);
                 break;
             }
