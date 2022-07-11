@@ -4,7 +4,6 @@ const UserModel = require('./models').User;
 
 const {checkCorrectTime} = require("./utils");
 const {addRemoteChannel} = require("./Services/objectRemoteService");
-const {getRemoteChannels} = require("./Services/objectRemoteService");
 const {User} = require("./models");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
@@ -28,9 +27,9 @@ const commandHandler = async (command, chatId) => {
     try {
         switch (command) {
             case "/start": {
-                console.log('UserModel.findOne({where: {chatId: chatId}} =',UserModel.findOne({where: {chatId: chatId}}));
-                const isUser = UserModel.findOne({where: {chatId: chatId}});
-                if (isUser) {
+                const isUser = !!(await UserModel.findOne({where: {chatId: chatId}}));
+
+                if (!isUser) {
                     await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON()))
                         .catch((err) => console.log('err =', err))
                 }
@@ -78,7 +77,8 @@ const commandHandler = async (command, chatId) => {
                 return;
         }
     } catch (e) {
-        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
+        /*console.log('eeee =', e);
+        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);*/
     }
 
 }
@@ -101,7 +101,7 @@ const start = async () => {
 
         try {
             if (store.state_pos === 2) {
-                addRemoteChannel(text, chatId, UserModel, bot);
+                const res = await addRemoteChannel(text, chatId, UserModel, bot);
                 await commandHandler('/menu', chatId);
                 return;
             }
@@ -118,7 +118,7 @@ const start = async () => {
 
             await commandHandler(TG_COMMANDS[text], chatId);
         } catch (e) {
-            return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
+            //return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
         }
     })
 

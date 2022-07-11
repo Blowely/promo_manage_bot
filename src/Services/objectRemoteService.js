@@ -1,17 +1,20 @@
 const {upsert} = require("./objectService");
-const {getDataUser} = require("./objectService");
+const {Channel} = require("../models");
+const {getMenu} = require("./objectLocalService");
 
 const addRemoteChannel = (name, chatId, UserModel, bot) => {
     const condition = {chatId: chatId};
 
-    upsert(name, condition, UserModel).then((res) => {
+    return upsert(name, condition, UserModel).then(async (res) => {
         console.log('success', JSON.stringify(res));
-        bot.sendMessage(chatId, 'Канал успешно добавлен');
+        await getMenu(chatId, bot, UserModel, {success: true});
     }).catch((err) => console.log('err =', err));
 }
 
-const getRemoteChannel = (chatId, UserModel) => {
-
+const getRemoteChannel = (chatId) => {
+    return Channel
+        .findOne({where: { chatId: chatId }})
+        .then(channel => channel).catch(err => console.log('err = ', err))
 }
 
 const getRemoteChannels = (chatId, UserModel) => {

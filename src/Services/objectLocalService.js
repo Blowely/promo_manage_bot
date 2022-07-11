@@ -1,23 +1,27 @@
 const options = require('../options');
-const {getRemoteChannels} = require("./objectRemoteService");
+const {getRemoteChannels, getRemoteChannel} = require("./objectRemoteService");
+const {logger} = require("sequelize/lib/utils/logger");
+
 const store = require('../store').store;
-const Channel = require("../models").Channel;;
+const Channel = require("../models").Channel;
 
 const startBot = async (chatId, bot, UserModel) => {
-    store.state_pos = 1;
-    await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
-        options.START_OPTIONS);
-    const users = await UserModel.findAll();
-    console.log(users.every(user => user instanceof UserModel)); // true
-    console.log("All users:", JSON.stringify(users, null, 2));
+    try {
+        store.state_pos = 1;
+        await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
+            options.START_OPTIONS);
 
-    const channels = await Channel.findAll();
-    console.log(channels.every(channel => channel instanceof Channel)); // true
-    console.log("All channels:", JSON.stringify(channels, null, 2));
-    //await bot.sendSticker(chatId, 'https://stickers.wiki/static/stickers/robocatbot/file_46751.gif');
+        const channels = [];
+        const user = await UserModel.findOne({where:{chatId: chatId}});
 
-    /*getRemoteChannels(chatId, UserModel).then(res => {
-        const channels = JSON.parse(res);
+        if (user && user.channels) {
+            const userChannels = user.channels.split(',');
+
+            for (const channel of userChannels) {
+                const foundChannel = await Channel.findOne({where:{chatId: channel}});
+                if (foundChannel) { channels.push(foundChannel.dataValues)}
+            }
+        }
 
         if (channels.length > 0) {
             for (const channel of channels) {
@@ -36,18 +40,23 @@ const startBot = async (chatId, bot, UserModel) => {
                 ]
             });
         }
-    });*/
-
+    } catch (e) {
+        console.log('e =',e);
+    }
 }
 
-const getMenu = async (chatId, bot, UserModel) => {
+const getMenu = async (chatId, bot, UserModel, option) => {
     store.state_pos = 1;
+    if (option.success) {
+        await bot.sendMessage(chatId, 'Канал успешно добавлен',
+            options.START_OPTIONS);
+    }
     await bot.sendMessage(chatId, '',
         options.START_OPTIONS);
 }
 
 const getMyChannels = async (chatId, bot) => {
-    store.state_pos = 2;
+    store.state_pos = 3;
     await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
 }
 
@@ -57,12 +66,12 @@ const addChannel = async (chatId, bot, UserModel) => {
 }
 
 const selectChannel = async (chatId, bot) => {
-    store.state_pos = 3;
+    store.state_pos = 4;
     await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: 25.06.2022", options.DATE);
 }
 
 const selectPlace = async (chatId, bot) => {
-    store.state_pos = 4;
+    store.state_pos = 5;
     await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
         "Дата: 2022-06-26 \n" +
         "\n" +
@@ -75,13 +84,13 @@ const selectPlace = async (chatId, bot) => {
 
 
 const selectTime = async (chatId, bot) => {
-    store.state_pos = 5;
+    store.state_pos = 6;
 
     await bot.sendMessage(chatId, "Теперь пришли время в формате: 02:23, в промежутке от 07:00 до 12:00", options.TIME);
 }
 
 const view_total = async (chatId, bot) => {
-    store.state_pos = 6;
+    store.state_pos = 7;
 
     await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
         "\n" +
