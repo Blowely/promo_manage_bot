@@ -1,5 +1,4 @@
 const options = require('../options');
-const {getRemoteChannels, getRemoteChannel} = require("./objectRemoteService");
 const {logger} = require("sequelize/lib/utils/logger");
 
 const store = require('../store').store;
