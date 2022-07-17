@@ -1,5 +1,6 @@
 const options = require('../options');
 const {logger} = require("sequelize/lib/utils/logger");
+const {fillChannels} = require("./objectService");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -10,35 +11,10 @@ const startBot = async (chatId, bot, UserModel) => {
         await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
             options.START_OPTIONS);
 
-        const channels = [];
-        const user = await UserModel.findOne({where:{chatId: chatId}});
+        const user = await UserModel.findOne({ where: {chatId: chatId}});
+        console.log('userChannels =', user.dataValues);
 
-        if (user && user.channels) {
-            const userChannels = user.channels.split(',');
-
-            for (const channel of userChannels) {
-                const foundChannel = await Channel.findOne({where:{chatId: channel}});
-                if (foundChannel) { channels.push(foundChannel.dataValues)}
-            }
-        }
-
-        if (channels.length > 0) {
-            for (const channel of channels) {
-                options.CHANNELS.reply_markup = JSON.stringify({
-                    inline_keyboard: [
-                        ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                        [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.id})}]
-                    ]
-                });
-            }
-
-            options.CHANNELS.reply_markup = JSON.stringify({
-                inline_keyboard: [
-                    ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                    [{text: 'Назад', callback_data: 'cancel'}]
-                ]
-            });
-        }
+        return await fillChannels(chatId, UserModel);
     } catch (e) {
         console.log('e =',e);
     }
@@ -47,10 +23,11 @@ const startBot = async (chatId, bot, UserModel) => {
 const getMenu = async (chatId, bot, UserModel, option) => {
     store.state_pos = 1;
     if (option.success) {
-        await bot.sendMessage(chatId, 'Канал успешно добавлен',
+        await bot.sendMessage(chatId, 'Канал успешно добавлен');
+        return await bot.sendMessage(chatId, 'Меню',
             options.START_OPTIONS);
     }
-    await bot.sendMessage(chatId, '',
+    return await bot.sendMessage(chatId, 'Меню',
         options.START_OPTIONS);
 }
 
