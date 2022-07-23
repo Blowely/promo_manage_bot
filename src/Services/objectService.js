@@ -28,11 +28,7 @@ const upsert = async (name, condition, Model) => {
 
     return await Channel.create({chatId, name});
 
-    /*Model.destroy({
-        where: {},
-        truncate: true
-    })
-    return Channel.destroy({
+    /*return Channel.destroy({
         where: {},
         truncate: true
     })*/
@@ -58,7 +54,7 @@ const fillChannels = async (chatId,UserModel) => {
             options.CHANNELS.reply_markup = JSON.stringify({
                 inline_keyboard: [
                     ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                    [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.id})}]
+                    [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.chatId})}]
                 ]
             });
         }

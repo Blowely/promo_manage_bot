@@ -64,7 +64,8 @@ const RESULT_INFO = {
                 {text:"Занять быстро 12:00 - 17:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
             [{text:"Занять подробно 17:00 - 22:00 ", callback_data: JSON.stringify({get: 'get_evening'})},
                 {text:"Занять быстро 17:00 - 22:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
-            [{text:"Выбрать другую дату", callback_data: 'revoke'}]
+            [{text:"Выбрать другую дату", callback_data: 'revoke'}],
+            [{text:"Вернуться в меню", callback_data: 'back_to_menu'}]
         ]
     })
 }

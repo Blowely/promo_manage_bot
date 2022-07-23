@@ -15,10 +15,13 @@ const Channel = sequelize.define('channel', {
     //chatId: {type: DataTypes.INTEGER},
     name: {type: DataTypes.STRING, unique: true},
     //channels: {type: DataTypes.ARRAY({id: DataTypes.INTEGER, name: DataTypes.STRING}), defaultValue: []}
-    //places: {type: DataTypes.STRING(10000), defaultValue: ''}
-},{
+    today: {type: DataTypes.STRING(10000), defaultValue: ''},
+    tomorrow: {type: DataTypes.STRING(10000), defaultValue: ''},
+    af_tmrw: {type: DataTypes.STRING(10000), defaultValue: ''},
+    //date: {type: DataTypes.STRING(10000), defaultValue: ''}
+}/*,{
     freezeTableName: true,
-})
+}*/)
 
 module.exports.User = User;
 module.exports.Channel = Channel;

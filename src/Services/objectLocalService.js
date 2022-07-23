@@ -5,6 +5,9 @@ const {fillChannels} = require("./objectService");
 const store = require('../store').store;
 const Channel = require("../models").Channel;
 
+var emoji = require('node-emoji').emoji;
+
+
 const startBot = async (chatId, bot, UserModel) => {
     try {
         store.state_pos = 1;
@@ -21,24 +24,24 @@ const startBot = async (chatId, bot, UserModel) => {
 }
 
 const getMenu = async (chatId, bot, UserModel, option) => {
+    console.log('>>> getMenuFunc is called');
     store.state_pos = 1;
-    if (option.success) {
-        await bot.sendMessage(chatId, 'Канал успешно добавлен');
-        return await bot.sendMessage(chatId, 'Меню',
-            options.START_OPTIONS);
+    if (option?.success) {
+        await bot.sendMessage(chatId, 'Канал успешно добавлен ' + emoji.white_check_mark);
+        return await bot.sendMessage(chatId, 'Меню', options.START_OPTIONS);
     }
     return await bot.sendMessage(chatId, 'Меню',
         options.START_OPTIONS);
 }
 
-const getMyChannels = async (chatId, bot) => {
-    store.state_pos = 3;
-    await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
-}
-
 const addChannel = async (chatId, bot, UserModel) => {
     store.state_pos = 2;
     await bot.sendMessage(chatId, 'Введи название канала', options.startOptions);
+}
+
+const getMyChannels = async (chatId, bot) => {
+    store.state_pos = 3;
+    await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
 }
 
 const selectChannel = async (chatId, bot) => {

@@ -7,10 +7,8 @@ const addRemoteChannel = (name, chatId, UserModel, bot) => {
 
     return upsert(name, condition, UserModel).then(async (res) => {
         console.log('success', JSON.stringify(res));
-        const data = await fillChannels(chatId, UserModel)
-        console.log('data =', data);
+        await fillChannels(chatId, UserModel)
         await getMenu(chatId, bot, UserModel, {success: true});
-        console.log('after_123');
     }).catch((err) => console.log('err1 =', err));
 }
 
@@ -28,9 +26,13 @@ const getRemoteChannels = (chatId, UserModel) => {
 
         return JSON.parse(user.channels);
     })
+}
+
+const postRemotePlace = async (selectedChannel, selectedDay, selectedTime) => {
 
 }
 
 module.exports.addRemoteChannel = addRemoteChannel;
 module.exports.getRemoteChannel = getRemoteChannel;
 module.exports.getRemoteChannels = getRemoteChannels;
+module.exports.postRemotePlace = postRemotePlace;
