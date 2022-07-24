@@ -18,10 +18,8 @@ const Channel = sequelize.define('channel', {
     today: {type: DataTypes.STRING(10000), defaultValue: ''},
     tomorrow: {type: DataTypes.STRING(10000), defaultValue: ''},
     af_tmrw: {type: DataTypes.STRING(10000), defaultValue: ''},
-    //date: {type: DataTypes.STRING(10000), defaultValue: ''}
-}/*,{
-    freezeTableName: true,
-}*/)
+    spec: {type: DataTypes.STRING(10000), defaultValue: ''}
+})
 
 module.exports.User = User;
 module.exports.Channel = Channel;

@@ -1,6 +1,8 @@
 const {upsert, fillChannels} = require("./objectService");
 const {Channel} = require("../models");
 const {getMenu} = require("./objectLocalService");
+const {v4} = require("uuid");
+const {Model} = require("sequelize");
 
 const addRemoteChannel = (name, chatId, UserModel, bot) => {
     const condition = {chatId: chatId};
@@ -30,6 +32,27 @@ const getRemoteChannels = (chatId, UserModel) => {
 
 const postRemotePlace = async (selectedChannel, selectedDay, selectedTime) => {
 
+    //const chatId = condition.chatId;
+    const user = await Model.findOne({ where: condition });
+
+    const deleted = false;
+    if (!user) {
+        console.log('Пользователь не найден!')
+    }
+
+    let data = '';
+    if (user.channels !== '') {
+        console.log('here');
+        const splitStr = user.channels.split(',');
+
+        data = '' + user.channels + ',' + chatId + '';
+    } else {
+        console.log('else')
+        data = '' + chatId + '';
+    }
+    console.log('data =', data);
+
+    await Model.update({channels: data}, {where: condition});
 }
 
 module.exports.addRemoteChannel = addRemoteChannel;
