@@ -30,10 +30,15 @@ const getRemoteChannels = (chatId, UserModel) => {
     })
 }
 
-const postRemotePlace = async (selectedChannel, selectedDay, selectedTime) => {
+const postRemotePlace = async (selectedChannel, selectedDay, selectedTime, bot, chatId) => {
+    try {
+        await Channel.update({[selectedDay]: selectedTime}, {where: {chatId: selectedChannel}});
 
+    } catch (e) {
+        bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
+    }
     //const chatId = condition.chatId;
-    const user = await Model.findOne({ where: condition });
+    /*const user = await Model.findOne({ where: condition });
 
     const deleted = false;
     if (!user) {
@@ -50,9 +55,8 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedTime) => {
         console.log('else')
         data = '' + chatId + '';
     }
-    console.log('data =', data);
+    console.log('data =', data);*/
 
-    await Model.update({channels: data}, {where: condition});
 }
 
 module.exports.addRemoteChannel = addRemoteChannel;

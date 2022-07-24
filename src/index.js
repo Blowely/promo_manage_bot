@@ -86,7 +86,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/view_result": {
                 console.log('>>> view result');
-                await postRemotePlace(selectedChannel, selectedDay, selectedTime);
+                await postRemotePlace(selectedChannel, selectedDay, selectedTime, bot, chatId);
                 await sendSuccessResult(chatId, bot);
                 break;
             }
