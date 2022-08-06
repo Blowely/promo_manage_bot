@@ -3,7 +3,7 @@ const sequelize = require('./db');
 const UserModel = require('./models').User;
 
 const {checkCorrectTime} = require("./utils");
-const {addRemoteChannel, postRemotePlace} = require("./Services/objectRemoteService");
+const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces} = require("./Services/objectRemoteService");
 const {User} = require("./models");
 const {redirectToPrevPage} = require("./Services/redirectHandler");
 
@@ -27,6 +27,7 @@ const bot = new TelegramApi(token, {polling: true});
 let selectedChannel = '';
 let selectedDay = '';
 let selectedTime = '';
+let selectedPart = '';
 
 const commandHandler = async (command, chatId) => {
     try {
@@ -70,9 +71,17 @@ const commandHandler = async (command, chatId) => {
                 break;
             }
             case "/select_place": {
-                console.log('>>> select place');
-                await selectPlace(chatId, bot);
-                break;
+                try {
+                    console.log('>>> select place');
+                    const info = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
+                    console.log('>>> info =', info);
+                    await selectPlace(chatId, bot);
+                    break;
+                } catch (e) {
+                    console.log('e =', e);
+                    break;
+                }
+
             }
             case "/select_time": {
                 console.log('>>> select time');
@@ -86,7 +95,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/view_result": {
                 console.log('>>> view result');
-                await postRemotePlace(selectedChannel, selectedDay, selectedTime, bot, chatId);
+                await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
                 await sendSuccessResult(chatId, bot);
                 break;
             }
@@ -173,7 +182,8 @@ const start = async () => {
         }
 
         if (parsedData.get) {
-            selectedTime = parsedData.get;
+            selectedTime = '08:00';//parsedData.get;
+            selectedPart = 'morning';
             return await commandHandler('/select_time', chatId);
         }
 
