@@ -1,6 +1,8 @@
 const options = require('../options');
 const {logger} = require("sequelize/lib/utils/logger");
 const {fillChannels} = require("./objectService");
+const moment = require("moment");
+const dayjs = require("dayjs");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -49,14 +51,14 @@ const selectChannel = async (chatId, bot) => {
     await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: 25.06.2022", options.DATE);
 }
 
-const selectPlace = async (chatId, bot) => {
+const selectPlace = async (infoTookPlaces, chatId, bot) => {
     store.state_pos = 5;
     await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
-        "Дата: 2022-06-26 \n" +
+        "Дата: "+ dayjs().format('DD MMMM YYYY') +" \n" +
         "\n" +
-        "#1) 07:00 - 12:00 - свободно\n" +
-        "#2) 12:00 - 17:00 - свободно\n" +
-        "#3) 17:00 - 22:00 - свободно\n" +
+        "#1) "+ (infoTookPlaces.morning.time ? infoTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
+        "#2) "+ (infoTookPlaces.day.time ? infoTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
+        "#3) "+ (infoTookPlaces.evening.time ? infoTookPlaces.evening.time + ' - занято' : '17:00 - 22:00 - свободно') + "\n" +
         "\n" +
         "Выберите время, чтобы занять его", options.PLACES_INFO);
 }

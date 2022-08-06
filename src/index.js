@@ -6,6 +6,9 @@ const {checkCorrectTime} = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces} = require("./Services/objectRemoteService");
 const {User} = require("./models");
 const {redirectToPrevPage} = require("./Services/redirectHandler");
+const moment = require("moment");
+const dayjs = require("dayjs");
+require('dayjs/locale/ru');
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -24,10 +27,14 @@ const token = '5463427155:AAGrFdCY4pKDdt-OX7XcOvwEAsyY_daDaFs';
 
 const bot = new TelegramApi(token, {polling: true});
 
+dayjs.locale('ru');
+
 let selectedChannel = '';
 let selectedDay = '';
 let selectedTime = '';
 let selectedPart = '';
+
+let infoTookPlaces = '';
 
 const commandHandler = async (command, chatId) => {
     try {
@@ -73,9 +80,9 @@ const commandHandler = async (command, chatId) => {
             case "/select_place": {
                 try {
                     console.log('>>> select place');
-                    const info = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
-                    console.log('>>> info =', info);
-                    await selectPlace(chatId, bot);
+                    infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
+                    console.log('>>> info =', infoTookPlaces);
+                    await selectPlace(infoTookPlaces, chatId, bot);
                     break;
                 } catch (e) {
                     console.log('e =', e);
