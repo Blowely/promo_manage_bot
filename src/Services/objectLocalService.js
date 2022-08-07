@@ -53,14 +53,14 @@ const selectChannel = async (chatId, bot) => {
     await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: 25.06.2022", options.DATE);
 }
 
-const selectPlace = async (infoTookPlaces, selectedDay, chatId, bot, success = false) => {
+const selectPlace = async (infoTookPlaces, selectedChannelName, selectedDay, chatId, bot, success = false) => {
     if (success) {
         await bot.sendMessage(chatId, 'Пост успешно занят!');
     }
     console.log('>>> infoTookPlaces =', infoTookPlaces);
 
     store.state_pos = 5;
-    await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
+    await bot.sendMessage(chatId, "Канал: "+ selectedChannelName +" \n" +
         "Дата: "+ DATE_MATCH[selectedDay] +" \n" +
         "\n" +
         "#1) "+ (infoTookPlaces.morning.time ? infoTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
