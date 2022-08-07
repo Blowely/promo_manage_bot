@@ -1,5 +1,6 @@
 const {v4} = require("uuid");
 const options = require("../options");
+const {Order} = require("../models");
 const Channel = require("../models").Channel;
 
 const upsert = async (name, condition, Model) => {
@@ -37,6 +38,8 @@ const upsert = async (name, condition, Model) => {
 const fillChannels = async (chatId,UserModel) => {
     const channels = [];
     const user = await UserModel.findOne({where:{chatId: chatId}});
+    const orders = await Order.findAll();
+    console.log('>>> orders =', orders);
 
     if (user && user.channels) {
         const userChannels = user.channels.split(',');
@@ -46,7 +49,7 @@ const fillChannels = async (chatId,UserModel) => {
             if (foundChannel) {channels.push(foundChannel.dataValues)}
         }
     }
-    console.log('channels =', channels);
+    //console.log('channels =', channels);
     if (channels.length > 0) {
         options.CHANNELS.reply_markup = JSON.stringify({inline_keyboard: []});
 

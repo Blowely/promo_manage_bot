@@ -23,7 +23,7 @@ const startBot = async (chatId, bot, UserModel) => {
 
         return await fillChannels(chatId, UserModel);
     } catch (e) {
-        console.log('e =',e);
+        console.log('e1 =',e);
     }
 }
 

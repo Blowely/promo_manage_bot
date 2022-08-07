@@ -1,9 +1,10 @@
 const {upsert, fillChannels} = require("./objectService");
-const {Channel} = require("../models");
+const {Channel, Order} = require("../models");
 const {getMenu} = require("./objectLocalService");
 const {v4} = require("uuid");
 const {Model} = require("sequelize");
 const {logger} = require("sequelize/lib/utils/logger");
+const {DATE_MATCH} = require("../constants");
 
 const addRemoteChannel = (name, chatId, UserModel, bot) => {
     const condition = {chatId: chatId};
@@ -104,6 +105,12 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
                 console.log('else')
                 data = '' + JSON.stringify(obj) + '';
             }
+
+            const date = DATE_MATCH[selectedDay];
+            const time = selectedTime;
+            const getPart = selectedPart;
+
+            await Order.create({chatId, date, time, getPart});
             await Channel.update({[selectedDay]: data}, {where: {chatId: selectedChannel}});
         } else {
             await bot.sendMessage(chatId, 'На это время место уже занято');

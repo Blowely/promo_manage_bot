@@ -27,7 +27,9 @@ const Order = sequelize.define('order', {
     //chatId: {type: DataTypes.INTEGER},
     date: {type: DataTypes.STRING},
     time: {type: DataTypes.STRING},
-    get: {type: DataTypes.STRING},
+    getPart: {type: DataTypes.STRING},
+}, {
+    freezeTableName: true
 })
 
 module.exports.User = User;
