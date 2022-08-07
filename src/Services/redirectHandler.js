@@ -1,4 +1,4 @@
-const {getMenu, selectChannel, getMyChannels} = require("./objectLocalService");
+const {getMenu, selectChannel, getMyChannels, selectPlace} = require("./objectLocalService");
 const store = require('../store').store;
 
 
@@ -9,6 +9,8 @@ const redirectToPrevPage = async (chatId, bot, UserModel) => {
         case 3: await getMenu(chatId, bot, UserModel); return;
         case 4: await getMyChannels(chatId, bot); return;
         case 5: await selectChannel(chatId, bot); return;
+        case 6: await selectChannel(chatId, bot); return;
+        case 7: await selectChannel(chatId, bot); return;
         default: break;
     }
 }

@@ -33,7 +33,7 @@ const getRemoteChannels = (chatId, UserModel) => {
 
 const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) => {
     try {
-        const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
+        const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
         console.log('>>> channel =', channel);
         if (channel.dataValues[selectedDay]) {
             const splitStr = channel[selectedDay].split(';');
@@ -86,7 +86,8 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
 const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId) => {
     try {
-        const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
+        console.log('>>> selectedChannel =', selectedChannel);
+        const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
         console.log('123');
         //if (true//!channel[selectedDay]) {
 

@@ -4,6 +4,7 @@ const {fillChannels} = require("./objectService");
 const moment = require("moment");
 const dayjs = require("dayjs");
 const {viewValidTime} = require("../utils");
+const {DATE_MATCH} = require("../constants");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -52,14 +53,14 @@ const selectChannel = async (chatId, bot) => {
     await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: 25.06.2022", options.DATE);
 }
 
-const selectPlace = async (infoTookPlaces, chatId, bot, success = false) => {
+const selectPlace = async (infoTookPlaces, selectedDay, chatId, bot, success = false) => {
     if (success) {
         await bot.sendMessage(chatId, 'Пост успешно занят!');
     }
 
     store.state_pos = 5;
     await bot.sendMessage(chatId, "Канал: Магические ручки \n" +
-        "Дата: "+ dayjs().format('DD MMMM YYYY') +" \n" +
+        "Дата: "+ DATE_MATCH[selectedDay] +" \n" +
         "\n" +
         "#1) "+ (infoTookPlaces.morning.time ? infoTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
         "#2) "+ (infoTookPlaces.day.time ? infoTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
@@ -81,7 +82,7 @@ const view_total = async (selectedChannelName, selectedDay, selectedTime, chatId
 
         await bot.sendMessage(chatId, "Канал: "+ selectedChannelName +" \n" +
             "\n" +
-            "Дата занятия поста: "+ dayjs().format('DD MMMM YYYY') +" \n" +
+            "Дата занятия поста: "+ DATE_MATCH[selectedDay] +" \n" +
             "Время: "+ selectedTime +" \n" +
             "Цена - нет\n" +
             "Комментарий - нет\n", options.TOTAL_INFO);

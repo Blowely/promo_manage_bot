@@ -19,8 +19,8 @@ const DATE = {
         inline_keyboard: [
             [{text:"Сегодня", callback_data: JSON.stringify({date: 'today'})},
                 {text:"Завтра", callback_data: JSON.stringify({date: 'tomorrow'})},
-                {text:"Послезавтра", callback_data: JSON.stringify({date: 'next_tomorrow'})}],
-            [{text:"Назад", callback_data: "cancel"}, {text:"Помощь", callback_data: "/help"}]
+                {text:"Послезавтра", callback_data: JSON.stringify({date: 'af_tmrw'})}],
+            [{text:"Назад", callback_data: "cancel"}, {text:"Помощь", callback_data: "help"}]
         ]
     })
 }
@@ -64,7 +64,7 @@ const TOTAL_INFO = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
             [{text:"Сохранить", callback_data: JSON.stringify({save: Date.now()})},
-                {text:"Отмена", callback_data: JSON.stringify({cancel: {from_state_pos: 6}})}],
+                {text:"Отмена", callback_data: 'cancel'}],
             [{text:"Добавить цену", callback_data: "add_cost"},{text:"Добавить комментарий", callback_data: "add_comment"}],
         ]
     })

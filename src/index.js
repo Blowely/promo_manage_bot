@@ -84,7 +84,7 @@ const commandHandler = async (command, chatId) => {
                     console.log('>>> select place');
                     infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
                     console.log('>>> info =', infoTookPlaces);
-                    await selectPlace(infoTookPlaces, chatId, bot);
+                    await selectPlace(infoTookPlaces, selectedDay, chatId, bot);
                     break;
                 } catch (e) {
                     console.log('e =', e);
@@ -105,7 +105,8 @@ const commandHandler = async (command, chatId) => {
             case "/view_result": {
                 console.log('>>> view result');
                 await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
-                await selectPlace(infoTookPlaces, chatId, bot);
+                infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
+                await selectPlace(infoTookPlaces, selectedDay, chatId, bot, true);
                 break;
             }
             default:
