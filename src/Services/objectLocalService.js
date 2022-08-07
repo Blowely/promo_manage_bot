@@ -60,7 +60,7 @@ const selectPlace = async (infoTookPlaces, chatId, bot) => {
         "#2) "+ (infoTookPlaces.day.time ? infoTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
         "#3) "+ (infoTookPlaces.evening.time ? infoTookPlaces.evening.time + ' - занято' : '17:00 - 22:00 - свободно') + "\n" +
         "\n" +
-        "Выберите время, чтобы занять его", options.PLACES_INFO);
+        "Выберите время, чтобы занять его", options.placesInfoHandler(infoTookPlaces));
 }
 
 

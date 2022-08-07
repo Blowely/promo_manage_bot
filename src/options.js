@@ -1,3 +1,4 @@
+const {infoTookPlaces} = require("./index.js");
 const START_OPTIONS = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
@@ -24,19 +25,34 @@ const DATE = {
     })
 }
 
-const PLACES_INFO = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text:"Занять подробно 07:00 - 12:00", callback_data: JSON.stringify({get: 'get_morning'})},
-                {text:"Занять быстро 07:00 - 12:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
-            [{text:"Занять подробно 12:00 - 17:00 ", callback_data: JSON.stringify({get: 'get_day'})},
-                {text:"Занять быстро 12:00 - 17:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
+let PLACES_INFO = {};
+
+const placesInfoHandler = (infoTookPlaces) => {
+    const morning = infoTookPlaces.morning.time ? [] :
+        [{text:"Занять подробно 07:00 - 12:00", callback_data: JSON.stringify({get: 'get_morning'})},
+            {text:"Занять быстро 07:00 - 12:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}];
+
+    const day = infoTookPlaces.day.time ? [] :
+        [{text:"Занять подробно 12:00 - 17:00 ", callback_data: JSON.stringify({get: 'get_day'})},
+            {text:"Занять быстро 12:00 - 17:00 ", callback_data:  JSON.stringify({get_fast: 'get_day_fast'})}];
+
+    const evening = infoTookPlaces.evening.time ? [] :
             [{text:"Занять подробно 17:00 - 22:00 ", callback_data: JSON.stringify({get: 'get_evening'})},
-                {text:"Занять быстро 17:00 - 22:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
-            [{text:"Выбрать другую дату", callback_data: 'revoke'}]
-        ]
-    })
+                {text:"Занять быстро 17:00 - 22:00 ", callback_data:  JSON.stringify({get_fast: 'get_evening_fast'})}];
+
+    return {
+        reply_markup: JSON.stringify({
+            inline_keyboard: [
+                morning,
+                day,
+                evening,
+                [{text:"Выбрать другую дату", callback_data: 'revoke'}]
+            ]
+        })
+    }
 }
+
+
 
 const TIME = {
     reply_markup: JSON.stringify({
@@ -74,6 +90,7 @@ module.exports.START_OPTIONS = START_OPTIONS;
 module.exports.CHANNELS = CHANNELS;
 module.exports.DATE = DATE;
 module.exports.PLACES_INFO = PLACES_INFO;
+module.exports.placesInfoHandler = placesInfoHandler;
 module.exports.TIME = TIME;
 module.exports.TOTAL_INFO = TOTAL_INFO;
 module.exports.RESULT_INFO = RESULT_INFO;
