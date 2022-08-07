@@ -2,13 +2,15 @@ const TelegramApi = require('node-telegram-bot-api');
 const sequelize = require('./db');
 const UserModel = require('./models').User;
 
-const {checkCorrectTime} = require("./utils");
+const {checkCorrectTime, checkValidTime, viewValidTime} = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces} = require("./Services/objectRemoteService");
-const {User} = require("./models");
+const {User, Channel} = require("./models");
 const {redirectToPrevPage} = require("./Services/redirectHandler");
 const moment = require("moment");
 const dayjs = require("dayjs");
 require('dayjs/locale/ru');
+const {selectedTimeHandler, selectedPartHandler} = require("./Services/objectLocalService");
+const {FAST_TIME} = require("./constants");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -21,7 +23,6 @@ const selectChannel = require('./Services/objectLocalService').selectChannel;
 const selectPlace = require('./Services/objectLocalService').selectPlace;
 const selectTime = require('./Services/objectLocalService').selectTime;
 const view_total = require('./Services/objectLocalService').view_total;
-const sendSuccessResult = require('./Services/objectLocalService').sendSuccessResult;
 
 const token = '5463427155:AAGrFdCY4pKDdt-OX7XcOvwEAsyY_daDaFs';
 
@@ -30,6 +31,7 @@ const bot = new TelegramApi(token, {polling: true});
 dayjs.locale('ru');
 
 let selectedChannel = '';
+let selectedChannelName = '';
 let selectedDay = '';
 let selectedTime = '';
 let selectedPart = '';
@@ -88,22 +90,22 @@ const commandHandler = async (command, chatId) => {
                     console.log('e =', e);
                     break;
                 }
-
             }
+
             case "/select_time": {
                 console.log('>>> select time');
-                await selectTime(chatId, bot);
+                await selectTime(selectedPart, chatId, bot);
                 break;
             }
             case "/view_total": {
                 console.log('>>> view total');
-                await view_total(chatId, bot);
+                await view_total(selectedChannelName, selectedDay, selectedTime, chatId, bot);
                 break;
             }
             case "/view_result": {
                 console.log('>>> view result');
                 await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
-                await sendSuccessResult(chatId, bot);
+                await selectPlace(infoTookPlaces, chatId, bot);
                 break;
             }
             default:
@@ -135,13 +137,19 @@ const start = async () => {
 
         try {
             if (store.state_pos === 2) {
-                const res = await addRemoteChannel(text, chatId, UserModel, bot);
-                return;
+                return await addRemoteChannel(text, chatId, UserModel, bot);
             }
 
             if (store.state_pos === 6) {
-                return checkCorrectTime(text) ? await commandHandler('/view_total', chatId) : bot.sendMessage(chatId,
-                    'Не верно указано время, укажи время в промежутке: от 07:00 до 12:00');
+                if (checkCorrectTime(text) && checkValidTime(text, selectedPart)) {
+                    selectedTime = text;
+                    console.log('>>> hrere');
+                    return await commandHandler('/view_total', chatId)
+                } else {
+                    await bot.sendMessage(chatId,
+                        'Не верно указано время, укажи время в промежутке: от ' + viewValidTime(selectedPart));
+                    return await commandHandler('/select_time', chatId)
+                }
             }
 
             if (!TG_COMMANDS.hasOwnProperty(text)) {
@@ -169,17 +177,14 @@ const start = async () => {
             parsedData = JSON.parse(data);
         } catch (e) {
             console.log('>>> return to the prev page');
-            parsedData = data;
-        }
-
-        console.log('>>> parsedData =', parsedData);
-
-        if (parsedData === 'cancel') {
             await redirectToPrevPage(chatId, bot, UserModel);
+            parsedData = data;
         }
 
         if (parsedData.channel_id) {
             selectedChannel = parsedData.channel_id
+            const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
+            selectedChannelName = channel.dataValues.name;
             return await commandHandler('/select_channel', chatId);
         }
 
@@ -189,9 +194,14 @@ const start = async () => {
         }
 
         if (parsedData.get) {
-            selectedTime = '08:00';//parsedData.get;
-            selectedPart = 'morning';
+            selectedPart = selectedPartHandler(parsedData.get);
             return await commandHandler('/select_time', chatId);
+        }
+
+        if (parsedData.get_fast) {
+            selectedPart = selectedPartHandler(parsedData.get_fast);
+            selectedTime = FAST_TIME[selectedPart];
+            return await commandHandler('/view_total', chatId);
         }
 
         if (parsedData.save) {
