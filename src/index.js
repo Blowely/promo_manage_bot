@@ -177,9 +177,14 @@ const start = async () => {
         try {
             parsedData = JSON.parse(data);
         } catch (e) {
-            console.log('>>> return to the prev page');
-            await redirectToPrevPage(chatId, bot, UserModel);
-            parsedData = data;
+            if (data === 'help') {
+                await bot.sendMessage(chatId, 'По вопросам пиши @in_a_state_of_flux');
+                await commandHandler('/menu', chatId);
+            } else {
+                console.log('>>> return to the prev page');
+                await redirectToPrevPage(chatId, bot, UserModel);
+                parsedData = data;
+            }
         }
 
         if (parsedData.channel_id) {
