@@ -57,6 +57,7 @@ const selectPlace = async (infoTookPlaces, selectedDay, chatId, bot, success = f
     if (success) {
         await bot.sendMessage(chatId, 'Пост успешно занят!');
     }
+    console.log('>>> infoTookPlaces =', infoTookPlaces);
 
     store.state_pos = 5;
     await bot.sendMessage(chatId, "Канал: Магические ручки \n" +

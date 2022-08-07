@@ -2,8 +2,8 @@ const TelegramApi = require('node-telegram-bot-api');
 const sequelize = require('./db');
 const UserModel = require('./models').User;
 
-const {checkCorrectTime, checkValidTime, viewValidTime} = require("./utils");
-const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces} = require("./Services/objectRemoteService");
+const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler} = require("./utils");
+const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace} = require("./Services/objectRemoteService");
 const {User, Channel} = require("./models");
 const {redirectToPrevPage} = require("./Services/redirectHandler");
 const moment = require("moment");
@@ -203,6 +203,12 @@ const start = async () => {
             selectedPart = selectedPartHandler(parsedData.get_fast);
             selectedTime = FAST_TIME[selectedPart];
             return await commandHandler('/view_total', chatId);
+        }
+
+        if (parsedData.get_out) {
+            selectedPart = partFreeHandler(parsedData.get_out);
+            await postRemoteFreePlace(selectedChannel, selectedDay, selectedPart, bot, chatId);
+            return await commandHandler('/select_place', chatId);
         }
 
         if (parsedData.save) {

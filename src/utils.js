@@ -42,6 +42,15 @@ const viewValidTime = (part) => {
     }
 }
 
+const partFreeHandler = (data) => {
+    switch (data) {
+        case 'get_out_morning': return 'morning';
+        case 'get_out_day': return 'day';
+        case 'get_out_evening': return 'evening';
+    }
+}
+
+
 const dateViewHandler = (date) => {
     /*switch (date) {
         ''
@@ -51,3 +60,4 @@ const dateViewHandler = (date) => {
 module.exports.checkCorrectTime = checkCorrectTime;
 module.exports.checkValidTime = checkValidTime;
 module.exports.viewValidTime = viewValidTime;
+module.exports.partFreeHandler = partFreeHandler;

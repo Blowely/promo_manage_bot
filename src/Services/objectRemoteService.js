@@ -47,13 +47,16 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
             if (splitStr.length) {
                 for (let item of splitStr) {
-                    item = JSON.parse(item);
-                    console.log('item = ', item);
-                    switch (item.get) {
-                        case 'morning': morningGet = item.get; morningTime = item.time; break;
-                        case 'day': dayGet = item.get; dayTime = item.time; break;
-                        case 'evening': eveningGet = item.get; eveningTime = item.time; break;
+                    if (item) {
+                        item = JSON.parse(item);
+                        console.log('item = ', item);
+                        switch (item.get) {
+                            case 'morning': morningGet = item.get; morningTime = item.time; break;
+                            case 'day': dayGet = item.get; dayTime = item.time; break;
+                            case 'evening': eveningGet = item.get; eveningTime = item.time; break;
+                        }
                     }
+
                 }
             } else {
                 switch (splitStr.get) {
@@ -110,26 +113,39 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
     } catch (e) {
         bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
     }
-    //const chatId = condition.chatId;
-    /*const user = await Model.findOne({ where: condition });
+}
 
-    const deleted = false;
-    if (!user) {
-        console.log('Пользователь не найден!')
+const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, bot, chatId) => {
+    try {
+        console.log('>>> selectedChannel =', selectedChannel);
+        const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
+        console.log('123');
+        //if (true//!channel[selectedDay]) {
+
+        if (channel) {
+            let data = '';
+            //const obj =  {get: selectedPart, time: selectedTime}
+            console.log('channel[selectedDay]=', channel[selectedDay]);
+            const items = channel[selectedDay].split(';');
+            for (let item of items) {
+                if (item) {
+                    item = JSON.parse(item);
+                    if (item.get !== selectedPart) {
+                        data += JSON.stringify(item) + ';'
+                    }
+                }
+            }
+            console.log('>>> data =', data);
+            await Channel.update({[selectedDay]: data}, {where: {chatId: selectedChannel}});
+        } else {
+            await bot.sendMessage(chatId, 'На это время место уже занято');
+        }
+
+
+    } catch (e) {
+        console.log('e =', e.message);
+        bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
     }
-
-    let data = '';
-    if (user.channels !== '') {
-        console.log('here');
-        const splitStr = user.channels.split(',');
-
-        data = '' + user.channels + ',' + chatId + '';
-    } else {
-        console.log('else')
-        data = '' + chatId + '';
-    }
-    console.log('data =', data);*/
-
 }
 
 module.exports.addRemoteChannel = addRemoteChannel;
@@ -137,3 +153,4 @@ module.exports.getRemoteChannel = getRemoteChannel;
 module.exports.getRemoteChannels = getRemoteChannels;
 module.exports.postRemotePlace = postRemotePlace;
 module.exports.checkInfoTookPlaces = checkInfoTookPlaces;
+module.exports.postRemoteFreePlace = postRemoteFreePlace;

@@ -28,15 +28,15 @@ const DATE = {
 let PLACES_INFO = {};
 
 const placesInfoHandler = (infoTookPlaces) => {
-    const morning = infoTookPlaces.morning.time ? [] :
+    const morning = infoTookPlaces.morning.time ? [{text:"Освободить " + infoTookPlaces.morning.time, callback_data: JSON.stringify({get_out: 'get_out_morning'})}] :
         [{text:"Занять подробно 07:00 - 12:00", callback_data: JSON.stringify({get: 'get_morning'})},
             {text:"Занять быстро 07:00 - 12:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}];
 
-    const day = infoTookPlaces.day.time ? [] :
+    const day = infoTookPlaces.day.time ? [{text:"Освободить " + infoTookPlaces.day.time, callback_data: JSON.stringify({get_out: 'get_out_day'})}] :
         [{text:"Занять подробно 12:00 - 17:00 ", callback_data: JSON.stringify({get: 'get_day'})},
             {text:"Занять быстро 12:00 - 17:00 ", callback_data:  JSON.stringify({get_fast: 'get_day_fast'})}];
 
-    const evening = infoTookPlaces.evening.time ? [] :
+    const evening = infoTookPlaces.evening.time ? [{text:"Освободить " + infoTookPlaces.evening.time, callback_data: JSON.stringify({get_out: 'get_out_evening'})}] :
             [{text:"Занять подробно 17:00 - 21:59 ", callback_data: JSON.stringify({get: 'get_evening'})},
                 {text:"Занять быстро 17:00 - 21:59 ", callback_data:  JSON.stringify({get_fast: 'get_evening_fast'})}];
 
