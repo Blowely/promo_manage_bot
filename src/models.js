@@ -21,5 +21,15 @@ const Channel = sequelize.define('channel', {
     spec: {type: DataTypes.STRING(10000), defaultValue: ''}
 })
 
+const Order = sequelize.define('order', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
+    chatId: {type: DataTypes.STRING},
+    //chatId: {type: DataTypes.INTEGER},
+    date: {type: DataTypes.STRING},
+    time: {type: DataTypes.STRING},
+    get: {type: DataTypes.STRING},
+})
+
 module.exports.User = User;
 module.exports.Channel = Channel;
+module.exports.Order = Order;
