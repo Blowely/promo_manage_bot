@@ -38,8 +38,13 @@ const upsert = async (name, condition, Model) => {
 const fillChannels = async (chatId,UserModel) => {
     const channels = [];
     const user = await UserModel.findOne({where:{chatId: chatId}});
+    console.log('>>> user =', user);
     const orders = await Order.findAll();
     console.log('>>> orders =', orders);
+
+    options.CHANNELS.reply_markup = JSON.stringify({
+        inline_keyboard: []
+    })
 
     if (user && user.channels) {
         const userChannels = user.channels.split(',');
@@ -69,6 +74,7 @@ const fillChannels = async (chatId,UserModel) => {
             ]
         });
     }
+    console.log('>>> options.CHANNELS.reply_markup =',options.CHANNELS.reply_markup);
     return options.CHANNELS.reply_markup;
 }
 
