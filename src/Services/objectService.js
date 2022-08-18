@@ -74,7 +74,7 @@ const fillChannels = async (chatId,UserModel) => {
             ]
         });
     }
-    console.log('>>> options.CHANNELS.reply_markup =',options.CHANNELS.reply_markup);
+
     return options.CHANNELS.reply_markup;
 }
 

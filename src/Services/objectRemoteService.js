@@ -35,8 +35,55 @@ const getRemoteChannels = (chatId, UserModel) => {
 const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) => {
     try {
         const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
+
+
+        const orders = await Order.findAll({ where: { chatId: selectedChannel, date: DATE_MATCH[selectedDay] }});
+        console.log('>>> ordersHERE = ', orders);
+
+        let morningGet = '';
+        let morningTime = '';
+        let dayGet = '';
+        let dayTime = '';
+        let eveningGet = '';
+        let eveningTime = '';
+
+        let date = '';
+
+        const arrOrders = [];
+
+        if (orders) {
+            console.log('>>> IN ORDERS');
+
+
+            for (let order of orders) {
+
+                if (order?.done) { continue; }
+
+                date = order.date;
+
+                switch (order.getPart) {
+                    case 'morning': morningGet = order.getPart; morningTime = order.time; break;
+                    case 'day': dayGet = order.getPart; dayTime = order.time; break;
+                    case 'evening': eveningGet = order.getPart; eveningTime = order.time; break;
+                }
+
+                const morning = { time: morningTime };
+                const day = { time: dayTime };
+                const evening = { time: eveningTime };
+
+                arrOrders.push({
+                    date: date ?? '',
+                    morning: morning ?? '',
+                    day: day ?? '',
+                    evening: evening ?? ''
+                })
+            }
+        }
         console.log('>>> channel =', channel);
-        if (channel.dataValues[selectedDay]) {
+        return arrOrders;
+
+
+        /*if (channel.dataValues[selectedDay]) {
             const splitStr = channel[selectedDay].split(';');
 
             let morningGet = '';
@@ -78,7 +125,7 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
             }
         } else {
             return {morning: '', day: '', evening: ''};
-        }
+        }*/
 
     } catch (e) {
         console.log('e =', e.message);
@@ -88,7 +135,7 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
 }
 
-const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId) => {
+const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatIdTrue) => {
     try {
         console.log('>>> selectedChannel =', selectedChannel);
         const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
@@ -110,15 +157,17 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
             const time = selectedTime;
             const getPart = selectedPart;
 
+            const chatId = selectedChannel;
+
             await Order.create({chatId, date, time, getPart});
             await Channel.update({[selectedDay]: data}, {where: {chatId: selectedChannel}});
         } else {
-            await bot.sendMessage(chatId, 'На это время место уже занято');
+            await bot.sendMessage(chatIdTrue, 'На это время место уже занято');
         }
 
 
     } catch (e) {
-        bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
+        bot.sendMessage(chatIdTrue, 'Что-то пошло не так =' + e.message);
     }
 }
 

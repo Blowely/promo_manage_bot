@@ -60,6 +60,7 @@ const selectPlace = async (infoTookPlaces, selectedChannelName, selectedDay, cha
     console.log('>>> infoTookPlaces =', infoTookPlaces);
 
     store.state_pos = 5;
+
     await bot.sendMessage(chatId, "Канал: "+ selectedChannelName +" \n" +
         "Дата: "+ DATE_MATCH[selectedDay] +" \n" +
         "\n" +
