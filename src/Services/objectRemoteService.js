@@ -51,17 +51,26 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
         const arrOrders = [];
 
-        if (orders) {
+        const response = {};
+
+        if (orders.length) {
+            console.log('>>> orders', orders);
             console.log('>>> IN ORDERS');
 
 
             for (let order of orders) {
 
-                if (order?.done) { continue; }
+                if (order.done) {
+                    console.log('why')
+                    continue; }
+
+                console.log('order =', order);
 
                 date = order.date;
 
-                switch (order.getPart) {
+                response[order.getPart] = { time: order.time };
+
+                /*switch (order.getPart) {
                     case 'morning': morningGet = order.getPart; morningTime = order.time; break;
                     case 'day': dayGet = order.getPart; dayTime = order.time; break;
                     case 'evening': eveningGet = order.getPart; eveningTime = order.time; break;
@@ -76,11 +85,16 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
                     morning: morning ?? '',
                     day: day ?? '',
                     evening: evening ?? ''
-                })
+                })*/
             }
         }
         console.log('>>> channel =', channel);
-        return arrOrders;
+        return Object.keys(response).length ? response : {
+            date: '',
+            morning:  {time: ''},
+            day: {time: ''},
+            evening: {time: ''}
+        };
 
 
         /*if (channel.dataValues[selectedDay]) {
