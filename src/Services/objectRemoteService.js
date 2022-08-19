@@ -51,7 +51,12 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
         const arrOrders = [];
 
-        const response = {};
+        const response = {
+            date: '',
+            morning:  {time: ''},
+            day: {time: ''},
+            evening: {time: ''}
+        }
 
         if (orders.length) {
             console.log('>>> orders', orders);
@@ -89,12 +94,7 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
             }
         }
         console.log('>>> channel =', channel);
-        return Object.keys(response).length ? response : {
-            date: '',
-            morning:  {time: ''},
-            day: {time: ''},
-            evening: {time: ''}
-        };
+        return response;
 
 
         /*if (channel.dataValues[selectedDay]) {
