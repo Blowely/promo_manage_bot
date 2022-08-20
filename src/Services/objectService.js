@@ -2,6 +2,7 @@ const {v4} = require("uuid");
 const options = require("../options");
 const {Order} = require("../models");
 const {DATE_MATCH} = require("../constants");
+const {emoji} = require("node-emoji");
 const Channel = require("../models").Channel;
 
 const upsert = async (name, condition, Model) => {
@@ -69,7 +70,6 @@ const fillChannels = async (chatId, UserModel) => {
 
         const channels = await getUserChannels(chatId,UserModel);
 
-        //console.log('channels =', channels);
         if (channels.length > 0) {
             options.CHANNELS.reply_markup = JSON.stringify({inline_keyboard: []});
 
@@ -85,7 +85,7 @@ const fillChannels = async (chatId, UserModel) => {
             options.CHANNELS.reply_markup = JSON.stringify({
                 inline_keyboard: [
                     ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                    [{text: 'Назад', callback_data: 'cancel'}]
+                    [{text: emoji.arrow_left + 'Назад', callback_data: 'cancel'}]
                 ]
             });
         }
@@ -125,7 +125,7 @@ const ordersHandler = async (date, channelChatId, channelName) => {
                 }
             }
         }
-        console.log('>>> day =', day);
+
         return day;
     } catch (e) {
         console.log('>>> Error ordersHandler', e.message);
@@ -133,34 +133,16 @@ const ordersHandler = async (date, channelChatId, channelName) => {
 
 }
 
-const ru_en_handler = (enName) => {
-    if (enName) {
-        return '';
-    }
-
-    switch (enName) {
-        case 'morning': {
-            return 'утро'
-        }
-        case 'day': {
-            return 'вечер'
-        }
-        case 'evening': {
-            return 'вечер'
-        }
-    }
-}
-
 const viewChannelsInNearPlaces = (channelsInDay) => {
     try {
         let res = ''
-        console.log('>>> channelsInDay =', channelsInDay);
+
         const channelNames = Object.keys(channelsInDay);
-        console.log('>>> channelNames =', channelNames);
+
         for (let i = 0; i < channelNames.length; i++) {
-            res += channelsInDay[channelNames[i]].name + ':' + (channelsInDay[channelNames[i]].hasOwnProperty('morning') ? '' : ' утро') +
-                ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('day') ? '' : ' день') +
-                ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('evening') ? '' : ' вечер') + '\n';
+            res += '<b>'+ channelsInDay[channelNames[i]].name + '</b>: ' + (channelsInDay[channelNames[i]].hasOwnProperty('morning') ? '' : ' утро') +
+                ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('day') ? '' : 'день') +
+                ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('evening') ? '' : 'вечер') + '\n';
         }
         console.log('>>> resView =', res);
         return res;
@@ -187,13 +169,13 @@ const fillNearestPlaces = async (chatId, UserModel) => {
 
         const res = "Ближайшие места \n" +
             "\n" +
-            "Сегодня ("+ DATE_MATCH['today'] +") \n" +
+            "<b>Сегодня ("+ DATE_MATCH['today'] +")</b> \n" +
             "\n" +
             ""+ viewChannelsInNearPlaces(todayChannels) +" \n" +
-            "Завтра ("+ DATE_MATCH['tomorrow'] +") \n" +
+            "<b>Завтра ("+ DATE_MATCH['tomorrow'] +")</b> \n" +
             "\n" +
             ""+ viewChannelsInNearPlaces(tomorrowChannels) +" \n" +
-            "Послезавтра ("+ DATE_MATCH['af_tmrw'] +") \n" +
+            "<b>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</b> \n" +
             "\n" +
             ""+ viewChannelsInNearPlaces(af_tmrwChannels) +" \n";
 

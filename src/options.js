@@ -1,9 +1,10 @@
 const {infoTookPlaces} = require("./index.js");
+const {emoji} = require("node-emoji");
 const START_OPTIONS = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text:"Мои каналы", callback_data: "/my_channels"},{text:"Добавить канал", callback_data: "/add_channel"}],
-            [{text:"Ближайшие места", callback_data: "/near"}],
+            [{text: emoji.scroll + "Мои каналы", callback_data: "/my_channels"},{text:emoji.heavy_plus_sign + "Добавить канал", callback_data: "/add_channel"}],
+            [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
         ]
     })
 }
@@ -20,7 +21,7 @@ const DATE = {
             [{text:"Сегодня", callback_data: JSON.stringify({date: 'today'})},
                 {text:"Завтра", callback_data: JSON.stringify({date: 'tomorrow'})},
                 {text:"Послезавтра", callback_data: JSON.stringify({date: 'af_tmrw'})}],
-            [{text:"Назад", callback_data: "cancel"}, {text:"Помощь", callback_data: "help"}]
+            [{text:emoji.arrow_left + "Назад", callback_data: "cancel"}, {text:emoji.grey_question + "Помощь", callback_data: "help"}]
         ]
     })
 }
@@ -46,7 +47,7 @@ const placesInfoHandler = (infoTookPlaces) => {
                 morning,
                 day,
                 evening,
-                [{text:"Выбрать другую дату", callback_data: 'revoke'}]
+                [{text: emoji.date + "Выбрать другую дату", callback_data: 'revoke'}]
             ]
         })
     }
@@ -55,15 +56,16 @@ const placesInfoHandler = (infoTookPlaces) => {
 const TIME = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text:"Отмена", callback_data: 'revoke'}]
+            [{text: emoji.raised_back_of_hand + "Отмена", callback_data: 'revoke'}]
         ]
     })
 }
 
 const MENU = {
+    parse_mode: 'HTML',
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text:"Вернуться в меню", callback_data: 'back_to_menu'}]
+            [{text: emoji.house + "Вернуться в меню", callback_data: 'back_to_menu'}]
         ]
     })
 }
@@ -71,9 +73,9 @@ const MENU = {
 const TOTAL_INFO = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text:"Сохранить", callback_data: JSON.stringify({save: Date.now()})},
-                {text:"Отмена", callback_data: 'cancel'}],
-            [{text:"Добавить цену", callback_data: "add_cost"},{text:"Добавить комментарий", callback_data: "add_comment"}],
+            [{text:emoji.floppy_disk + "Сохранить", callback_data: JSON.stringify({save: Date.now()})},
+                {text:emoji.no_entry_sign + "Отмена", callback_data: 'cancel'}],
+            [{text: emoji.moneybag + "Добавить цену", callback_data: "add_cost"},{text: emoji.pencil + "Добавить комментарий", callback_data: "add_comment"}],
         ]
     })
 }

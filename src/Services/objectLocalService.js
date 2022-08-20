@@ -57,7 +57,7 @@ const selectChannel = async (chatId, bot) => {
 
 const selectPlace = async (infoTookPlaces, selectedChannelName, selectedDay, chatId, bot, success = false) => {
     if (success) {
-        await bot.sendMessage(chatId, 'Пост успешно занят!');
+        await bot.sendMessage(chatId, 'Пост успешно занят!' + emoji.white_check_mark);
     }
     console.log('>>> infoTookPlaces =', infoTookPlaces);
 
