@@ -64,15 +64,11 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
 
 
             for (let order of orders) {
-
                 if (order.done) {
-                    console.log('why')
-                    continue; }
-
+                    console.log('>>> DONE order =', order); continue; }
                 console.log('order =', order);
 
-                date = order.date;
-
+                response.date = order.date;
                 response[order.getPart] = { time: order.time };
 
                 /*switch (order.getPart) {
@@ -188,11 +184,10 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
 const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, bot, chatId) => {
     try {
         console.log('>>> selectedChannel =', selectedChannel);
-        const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
-        console.log('123');
-        //if (true//!channel[selectedDay]) {
 
-        if (channel) {
+        const date = DATE_MATCH[selectedDay];
+
+        /*if (channel) {
             let data = '';
             //const obj =  {get: selectedPart, time: selectedTime}
             console.log('channel[selectedDay]=', channel[selectedDay]);
@@ -207,10 +202,11 @@ const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, b
             }
             console.log('>>> data =', data);
             await Channel.update({[selectedDay]: data}, {where: {chatId: selectedChannel}});
+
         } else {
             await bot.sendMessage(chatId, 'На это время место уже занято');
-        }
-
+        }*/
+        await Order.update({done: true}, {where: {chatId: selectedChannel, date, getPart: selectedPart, done: false}})
 
     } catch (e) {
         console.log('e =', e.message);

@@ -3,7 +3,7 @@ const START_OPTIONS = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
             [{text:"Мои каналы", callback_data: "/my_channels"},{text:"Добавить канал", callback_data: "/add_channel"}],
-            [{text:"Ближайшие места", callback_data: "/my_channels"}],
+            [{text:"Ближайшие места", callback_data: "/near"}],
         ]
     })
 }
@@ -60,6 +60,14 @@ const TIME = {
     })
 }
 
+const MENU = {
+    reply_markup: JSON.stringify({
+        inline_keyboard: [
+            [{text:"Вернуться в меню", callback_data: 'back_to_menu'}]
+        ]
+    })
+}
+
 const TOTAL_INFO = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
@@ -92,3 +100,4 @@ module.exports.placesInfoHandler = placesInfoHandler;
 module.exports.TIME = TIME;
 module.exports.TOTAL_INFO = TOTAL_INFO;
 module.exports.RESULT_INFO = RESULT_INFO;
+module.exports.MENU = MENU;

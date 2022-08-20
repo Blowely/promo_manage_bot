@@ -9,8 +9,9 @@ const {redirectToPrevPage} = require("./Services/redirectHandler");
 const moment = require("moment");
 const dayjs = require("dayjs");
 require('dayjs/locale/ru');
-const {selectedTimeHandler, selectedPartHandler} = require("./Services/objectLocalService");
+const {selectedTimeHandler, selectedPartHandler, getNearestPlaces} = require("./Services/objectLocalService");
 const {FAST_TIME} = require("./constants");
+const {fillChannels} = require("./Services/objectService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -74,6 +75,11 @@ const commandHandler = async (command, chatId) => {
                 await addChannel(chatId, bot);
                 break;
             }
+            case "/near": {
+                console.log('>>> get nearest places');
+                await getNearestPlaces(chatId, bot, UserModel);
+                break;
+            }
             case "/select_channel": {
                 console.log('>>> select channel');
                 await selectChannel(chatId, bot);
@@ -83,7 +89,11 @@ const commandHandler = async (command, chatId) => {
                 try {
                     console.log('>>> select place');
                     infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
-                    console.log('>>> info =', infoTookPlaces);
+                    /*if (!selectedChannelName) {
+                        console.log('>>> dd123');
+                        const channel = await Channel.findOne({where: {chatId: selectedChannel}});
+                        selectedChannelName = channel.name;
+                    }*/
                     await selectPlace(infoTookPlaces, selectedChannelName, selectedDay, chatId, bot);
                     break;
                 } catch (e) {
@@ -182,7 +192,7 @@ const start = async () => {
                 await commandHandler('/menu', chatId);
             } else {
                 console.log('>>> return to the prev page');
-                await redirectToPrevPage(chatId, bot, UserModel);
+                await redirectToPrevPage(data, chatId, bot, UserModel);
                 parsedData = data;
             }
         }
@@ -190,7 +200,7 @@ const start = async () => {
         if (parsedData.channel_id) {
             selectedChannel = parsedData.channel_id
             const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
-            selectedChannelName = channel.dataValues.name;
+            selectedChannelName = channel.name;
             return await commandHandler('/select_channel', chatId);
         }
 

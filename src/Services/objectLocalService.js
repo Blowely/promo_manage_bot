@@ -1,10 +1,11 @@
 const options = require('../options');
 const {logger} = require("sequelize/lib/utils/logger");
-const {fillChannels} = require("./objectService");
+const {fillChannels, fillNearestPlaces} = require("./objectService");
 const moment = require("moment");
 const dayjs = require("dayjs");
 const {viewValidTime} = require("../utils");
 const {DATE_MATCH} = require("../constants");
+const {User} = require("../models");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -45,6 +46,7 @@ const addChannel = async (chatId, bot, UserModel) => {
 
 const getMyChannels = async (chatId, bot) => {
     store.state_pos = 3;
+    await fillChannels(chatId, User);
     await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
 }
 
@@ -91,7 +93,19 @@ const view_total = async (selectedChannelName, selectedDay, selectedTime, chatId
     } catch (e) {
         console.log('e =', e.message);
     }
+}
 
+const getNearestPlaces = async (chatId, bot, UserModel) => {
+    try {
+        store.state_pos = 8;
+
+        const text = await fillNearestPlaces(chatId, UserModel);
+
+        await bot.sendMessage(chatId, text, options.MENU);
+
+    } catch (e) {
+        console.log('e =', e.message);
+    }
 }
 
 const selectedTimeHandler = (part, time) => {
@@ -142,5 +156,6 @@ module.exports.selectChannel = selectChannel;
 module.exports.selectPlace = selectPlace;
 module.exports.selectTime = selectTime;
 module.exports.view_total = view_total;
+module.exports.getNearestPlaces = getNearestPlaces;
 module.exports.selectedTimeHandler = selectedTimeHandler;
 module.exports.selectedPartHandler = selectedPartHandler;

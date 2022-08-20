@@ -28,6 +28,7 @@ const Order = sequelize.define('order', {
     date: {type: DataTypes.STRING},
     time: {type: DataTypes.STRING},
     getPart: {type: DataTypes.STRING},
+    done: {type: DataTypes.BOOLEAN, defaultValue: false}
 }, {
     freezeTableName: true
 })
