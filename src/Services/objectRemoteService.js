@@ -1,5 +1,5 @@
 const {upsert, fillChannels} = require("./objectService");
-const {Channel, Order} = require("../models");
+const {Channel, Order, User} = require("../models");
 const {getMenu} = require("./objectLocalService");
 const {v4} = require("uuid");
 const {Model} = require("sequelize");
@@ -32,24 +32,11 @@ const getRemoteChannels = (chatId, UserModel) => {
     })
 }
 
-const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) => {
+const checkInfoTookPlaces = async (selectedChannel, selectedDate, chatId, bot) => {
     try {
         const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
 
-
-        const orders = await Order.findAll({ where: { chatId: selectedChannel, date: DATE_MATCH[selectedDay] }});
-        console.log('>>> ordersHERE = ', orders);
-
-        let morningGet = '';
-        let morningTime = '';
-        let dayGet = '';
-        let dayTime = '';
-        let eveningGet = '';
-        let eveningTime = '';
-
-        let date = '';
-
-        const arrOrders = [];
+        const orders = await Order.findAll({ where: { chatId: selectedChannel, date: selectedDay}});
 
         const response = {
             date: '',
@@ -58,89 +45,19 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDay, chatId, bot) =>
             evening: {time: ''}
         }
 
-        if (orders.length) {
-            console.log('>>> orders', orders);
-            console.log('>>> IN ORDERS');
+        if (!orders.length) { return response; }
 
+        for (let order of orders) {
+            if (order.done) { continue; }
 
-            for (let order of orders) {
-                if (order.done) {
-                    console.log('>>> DONE order =', order); continue; }
-                console.log('order =', order);
-
-                response.date = order.date;
-                response[order.getPart] = { time: order.time };
-
-                /*switch (order.getPart) {
-                    case 'morning': morningGet = order.getPart; morningTime = order.time; break;
-                    case 'day': dayGet = order.getPart; dayTime = order.time; break;
-                    case 'evening': eveningGet = order.getPart; eveningTime = order.time; break;
-                }
-
-                const morning = { time: morningTime };
-                const day = { time: dayTime };
-                const evening = { time: eveningTime };
-
-                arrOrders.push({
-                    date: date ?? '',
-                    morning: morning ?? '',
-                    day: day ?? '',
-                    evening: evening ?? ''
-                })*/
-            }
+            response.date = order.date;
+            response[order.getPart] = { time: order.time };
         }
-        console.log('>>> channel =', channel);
+
         return response;
-
-
-        /*if (channel.dataValues[selectedDay]) {
-            const splitStr = channel[selectedDay].split(';');
-
-            let morningGet = '';
-            let morningTime = '';
-            let dayGet = '';
-            let dayTime = '';
-            let eveningGet = '';
-            let eveningTime = '';
-
-            if (splitStr.length) {
-                for (let item of splitStr) {
-                    if (item) {
-                        item = JSON.parse(item);
-                        console.log('item = ', item);
-                        switch (item.get) {
-                            case 'morning': morningGet = item.get; morningTime = item.time; break;
-                            case 'day': dayGet = item.get; dayTime = item.time; break;
-                            case 'evening': eveningGet = item.get; eveningTime = item.time; break;
-                        }
-                    }
-
-                }
-            } else {
-                switch (splitStr.get) {
-                    case 'morning': morningGet = splitStr.get; morningTime = splitStr.time; break;
-                    case 'day': dayGet = splitStr.get; dayTime = splitStr.time; break;
-                    case 'evening': eveningGet = splitStr.get; eveningTime = splitStr.time; break;
-                }
-            }
-
-            const morning = { time: morningTime };
-            const day = { time: dayTime };
-            const evening = { time: eveningTime };
-
-            return {
-                morning: morning || '',
-                day: day || '',
-                evening: evening || ''
-            }
-        } else {
-            return {morning: '', day: '', evening: ''};
-        }*/
-
     } catch (e) {
         console.log('e =', e.message);
         bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
-
     }
 
 }
@@ -214,9 +131,74 @@ const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, b
     }
 }
 
+const postRemoteSelectedChannelInUser = async (selectedChannelId, chatId) => {
+    try {
+        await User.update({
+            selectedChannel: selectedChannelId,
+            selectedCost: '',
+            selectedComment: ''
+        }, {where: {chatId}});
+    } catch (e) {
+        console.log('>>> Error postRemoteSelectedChannelInUser', e.message);
+    }
+}
+
+const postRemoteSelectedDateInUser = async (selectedDate, chatId) => {
+    try {
+        await User.update({selectedDate: selectedDate}, {where: {chatId}})
+    } catch (e) {
+        console.log('>>> Error postRemoteSelectedDateInUser', e.message);
+    }
+}
+
+const postRemoteSelectedTimeInUser = async (selectedTime, chatId) => {
+    try {
+        await User.update({selectedTime: selectedTime}, {where: {chatId}})
+    } catch (e) {
+        console.log('>>> Error postRemoteSelectedTimeInUser', e.message);
+    }
+}
+
+const postRemoteSelectedOrderInUser = async (selectedOrderId, chatId) => {
+    try {
+        await User.update({selectedOrder: selectedOrderId}, {where: {chatId}})
+    } catch (e) {
+        console.log('>>> Error postRemoteSelectedOrderInUser', e.message);
+    }
+}
+
+const postRemoteOrderCostInUser = async (cost, chatId) => {
+    try {
+        const user = await User.findOne({where: {chatId: chatId}});
+        console.log('>>> userPost =', user);
+        console.log('>>> selectedChannelId =', user.selectedChannel);
+        await User.update({selectedCost: cost}, {where: {chatId: chatId}})
+    } catch (e) {
+        console.log('>>> Error postRemoteOrderCost', e.message);
+    }
+}
+
+const postRemoteOrderCommentInUser = async (comment, chatId) => {
+    try {
+        const user = await User.findOne({where: {chatId: chatId}});
+        console.log('>>> userPost =', user);
+        console.log('>>> selectedChannelId =', user.selectedChannel);
+        await User.update({selectedComment: comment}, {where: {chatId: chatId}})
+    } catch (e) {
+        console.log('>>> Error postRemoteOrderComment', e.message);
+    }
+}
+
 module.exports.addRemoteChannel = addRemoteChannel;
 module.exports.getRemoteChannel = getRemoteChannel;
 module.exports.getRemoteChannels = getRemoteChannels;
 module.exports.postRemotePlace = postRemotePlace;
 module.exports.checkInfoTookPlaces = checkInfoTookPlaces;
 module.exports.postRemoteFreePlace = postRemoteFreePlace;
+module.exports.postRemoteSelectedChannelInUser = postRemoteSelectedChannelInUser;
+module.exports.postRemoteSelectedDateInUser = postRemoteSelectedDateInUser;
+module.exports.postRemoteSelectedTimeInUser = postRemoteSelectedTimeInUser;
+module.exports.postRemoteSelectedOrderInUser = postRemoteSelectedOrderInUser;
+module.exports.postRemoteOrderCostInUser = postRemoteOrderCostInUser;
+module.exports.postRemoteOrderCommentInUser = postRemoteOrderCommentInUser;
+

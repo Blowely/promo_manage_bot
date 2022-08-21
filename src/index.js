@@ -3,14 +3,18 @@ const sequelize = require('./db');
 const UserModel = require('./models').User;
 
 const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler} = require("./utils");
-const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace} = require("./Services/objectRemoteService");
+const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
+    postRemoteSelectedTimeInUser, postRemoteOrderCostInUser, postRemoteOrderCommentInUser
+} = require("./Services/objectRemoteService");
+const {postRemoteSelectedDateInUser} = require('./Services/objectRemoteService');
+
 const {User, Channel} = require("./models");
 const {redirectToPrevPage} = require("./Services/redirectHandler");
 const moment = require("moment");
 const dayjs = require("dayjs");
 require('dayjs/locale/ru');
-const {selectedTimeHandler, selectedPartHandler, getNearestPlaces} = require("./Services/objectLocalService");
-const {FAST_TIME} = require("./constants");
+const {selectedTimeHandler, selectedPartHandler, getNearestPlaces, addCost, addComment} = require("./Services/objectLocalService");
+const {FAST_TIME, DATE_MATCH} = require("./constants");
 const {fillChannels} = require("./Services/objectService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
@@ -88,13 +92,10 @@ const commandHandler = async (command, chatId) => {
             case "/select_place": {
                 try {
                     console.log('>>> select place');
-                    infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
-                    /*if (!selectedChannelName) {
-                        console.log('>>> dd123');
-                        const channel = await Channel.findOne({where: {chatId: selectedChannel}});
-                        selectedChannelName = channel.name;
-                    }*/
-                    await selectPlace(infoTookPlaces, selectedChannelName, selectedDay, chatId, bot);
+                    const user = await User.findOne({ where: {chatId: chatId}});
+                    const dataTookPlaces = await checkInfoTookPlaces(user.selectedChannel, user.selectedDate, chatId, bot);
+
+                    await selectPlace(dataTookPlaces, selectedChannelName, selectedDay, chatId, bot);
                     break;
                 } catch (e) {
                     console.log('e =', e);
@@ -109,7 +110,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/view_total": {
                 console.log('>>> view total');
-                await view_total(selectedChannelName, selectedDay, selectedTime, chatId, bot);
+                await view_total(chatId, bot);
                 break;
             }
             case "/view_result": {
@@ -117,6 +118,16 @@ const commandHandler = async (command, chatId) => {
                 await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
                 infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
                 await selectPlace(infoTookPlaces, selectedChannelName, selectedDay, chatId, bot, true);
+                break;
+            }
+            case "/add_cost": {
+                console.log('>>> add_cost');
+                await addCost(chatId, bot);
+                break;
+            }
+            case "/add_comment": {
+                console.log('>>> add_comment');
+                await addComment(chatId, bot);
                 break;
             }
             default:
@@ -143,17 +154,23 @@ const start = async () => {
     ])
 
     bot.on('message', async (msg) => {
-        const text = msg.text;
-        const chatId = msg.chat.id;
-
         try {
-            if (store.state_pos === 2) {
+            const text = msg.text;
+            const chatId = msg.chat.id;
+
+            const user = await UserModel.findOne({where: {chatId}});
+            console.log('>>> userMessage =', user);
+            const userState = user?.state;
+
+            console.log('>>>> userState =', userState);
+            if (userState === '2') {
                 return await addRemoteChannel(text, chatId, UserModel, bot);
             }
 
-            if (store.state_pos === 6) {
+            if (userState === '6') {
                 if (checkCorrectTime(text) && checkValidTime(text, selectedPart)) {
                     selectedTime = text;
+                    await postRemoteSelectedTimeInUser(selectedTime, chatId);
                     console.log('>>> hrere');
                     return await commandHandler('/view_total', chatId)
                 } else {
@@ -161,6 +178,16 @@ const start = async () => {
                         'Не верно указано время, укажи время в промежутке: от ' + viewValidTime(selectedPart));
                     return await commandHandler('/select_time', chatId)
                 }
+            }
+
+            if (userState === '9') {
+                await postRemoteOrderCostInUser(text, chatId);
+                return await commandHandler('/view_total', chatId)
+            }
+
+            if (userState === '10') {
+                await postRemoteOrderCommentInUser(text, chatId);
+                return await commandHandler('/view_total', chatId)
             }
 
             if (!TG_COMMANDS.hasOwnProperty(text)) {
@@ -201,11 +228,13 @@ const start = async () => {
             selectedChannel = parsedData.channel_id
             const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
             selectedChannelName = channel.name;
+            await postRemoteSelectedChannelInUser(selectedChannel, chatId);
             return await commandHandler('/select_channel', chatId);
         }
 
         if (parsedData.date) {
             selectedDay = parsedData.date;
+            await postRemoteSelectedDateInUser(DATE_MATCH[selectedDay], chatId);
             return await commandHandler('/select_place', chatId);
         }
 
@@ -217,6 +246,7 @@ const start = async () => {
         if (parsedData.get_fast) {
             selectedPart = selectedPartHandler(parsedData.get_fast);
             selectedTime = FAST_TIME[selectedPart];
+            await postRemoteSelectedTimeInUser(FAST_TIME[selectedPart], chatId);
             return await commandHandler('/view_total', chatId);
         }
 
@@ -228,6 +258,14 @@ const start = async () => {
 
         if (parsedData.save) {
             return await commandHandler('/view_result', chatId);
+        }
+
+        if (parsedData.add_cost) {
+            return await commandHandler('/add_cost', chatId);
+        }
+
+        if (parsedData.add_comment) {
+            return await commandHandler('/add_comment', chatId);
         }
     })
 }

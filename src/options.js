@@ -56,7 +56,7 @@ const placesInfoHandler = (infoTookPlaces) => {
 const TIME = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text: emoji.raised_back_of_hand + "Отмена", callback_data: 'revoke'}]
+            [{text: emoji.no_entry_sign + "Отмена", callback_data: 'revoke'}]
         ]
     })
 }
@@ -75,24 +75,12 @@ const TOTAL_INFO = {
         inline_keyboard: [
             [{text:emoji.floppy_disk + "Сохранить", callback_data: JSON.stringify({save: Date.now()})},
                 {text:emoji.no_entry_sign + "Отмена", callback_data: 'cancel'}],
-            [{text: emoji.moneybag + "Добавить цену", callback_data: "add_cost"},{text: emoji.pencil + "Добавить комментарий", callback_data: "add_comment"}],
+            [{text: emoji.moneybag + "Добавить цену", callback_data: JSON.stringify({add_cost: 'add_cost'})},
+                {text: emoji.pencil + "Добавить комментарий", callback_data: JSON.stringify({add_comment: 'add_comment'})}],
         ]
     })
 }
 
-const RESULT_INFO = {
-    reply_markup: JSON.stringify({
-        inline_keyboard: [
-            [{text:"Освободить 8:00", callback_data: JSON.stringify({give_away: 'give_away_morning'})}],
-            [{text:"Занять подробно 12:00 - 17:00 ", callback_data: JSON.stringify({get: 'get_day'})},
-                {text:"Занять быстро 12:00 - 17:00 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
-            [{text:"Занять подробно 17:00 - 21:59 ", callback_data: JSON.stringify({get: 'get_evening'})},
-                {text:"Занять быстро 17:00 - 21:59 ", callback_data:  JSON.stringify({get_fast: 'get_morning_fast'})}],
-            [{text:"Выбрать другую дату", callback_data: 'revoke'}],
-            [{text:"Вернуться в меню", callback_data: 'back_to_menu'}]
-        ]
-    })
-}
 
 module.exports.START_OPTIONS = START_OPTIONS;
 module.exports.CHANNELS = CHANNELS;
@@ -101,5 +89,4 @@ module.exports.PLACES_INFO = PLACES_INFO;
 module.exports.placesInfoHandler = placesInfoHandler;
 module.exports.TIME = TIME;
 module.exports.TOTAL_INFO = TOTAL_INFO;
-module.exports.RESULT_INFO = RESULT_INFO;
 module.exports.MENU = MENU;

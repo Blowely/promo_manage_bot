@@ -1,22 +1,29 @@
-const {getMenu, selectChannel, getMyChannels, selectPlace} = require("./objectLocalService");
+const {getMenu, selectChannel, getMyChannels, selectPlace, view_total} = require("./objectLocalService");
+
 const store = require('../store').store;
 
 
 const redirectToPrevPage = async (data, chatId, bot, UserModel) => {
-    console.log('>>> store.state_pos =', store.state_pos);
+    try {
+        const user = await UserModel.findOne({where: {chatId}});
+        //TODO SWITCH CASE on DATA that received on props
+        console.log('>>> user.state =', user.state);
 
-    //TODO SWITCH CASE on DATA that received on props
-
-    switch (store.state_pos) {
-        case 1: await getMenu(chatId, bot, UserModel); return;
-        case 2: await getMenu(chatId, bot, UserModel); return;
-        case 3: await getMenu(chatId, bot, UserModel); return;
-        case 4: await getMyChannels(chatId, bot); return;
-        case 5: await selectChannel(chatId, bot); return;
-        case 6: await selectChannel(chatId, bot); return;
-        case 7: await selectChannel(chatId, bot); return;
-        case 8: await getMenu(chatId, bot, UserModel); return;
-        default: break;
+        switch (user.state) {
+            case '1': await getMenu(chatId, bot, UserModel); return;
+            case '2': await getMenu(chatId, bot, UserModel); return;
+            case '3': await getMenu(chatId, bot, UserModel); return;
+            case '4': await getMyChannels(chatId, bot); return;
+            case '5': await selectChannel(chatId, bot); return;
+            case '6': await selectChannel(chatId, bot); return;
+            case '7': await selectChannel(chatId, bot); return;
+            case '8': await getMenu(chatId, bot, UserModel); return;
+            case '9': await view_total(chatId, bot); return;
+            case '10': await selectChannel(chatId, bot, UserModel); return;
+            default: break;
+        }
+    } catch (e) {
+        console.log('>>> err redirectToPrevPage', e.message);
     }
 }
 
