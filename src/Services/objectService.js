@@ -82,13 +82,14 @@ const fillChannels = async (chatId, UserModel) => {
                 });
             }
 
-            options.CHANNELS.reply_markup = JSON.stringify({
-                inline_keyboard: [
-                    ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                    [{text: emoji.arrow_left + 'Назад', callback_data: 'cancel'}]
-                ]
-            });
         }
+
+        options.CHANNELS.reply_markup = JSON.stringify({
+            inline_keyboard: [
+                ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
+                [{text: emoji.arrow_left + 'Назад', callback_data: 'cancel'}]
+            ]
+        });
 
         return options.CHANNELS.reply_markup;
     } catch (e) {
@@ -140,7 +141,8 @@ const viewChannelsInNearPlaces = (channelsInDay) => {
         const channelNames = Object.keys(channelsInDay);
 
         for (let i = 0; i < channelNames.length; i++) {
-            res += '<b>'+ channelsInDay[channelNames[i]].name + '</b>: ' + (channelsInDay[channelNames[i]].hasOwnProperty('morning') ? '' : ' утро') +
+            const link = 'https://t.me/'+ channelsInDay[channelNames[i]].name + '';
+            res += '<a href="'+ link +'">'+ channelsInDay[channelNames[i]].name + '</a>: ' + (channelsInDay[channelNames[i]].hasOwnProperty('morning') ? '' : ' утро') +
                 ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('day') ? '' : 'день') +
                 ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('evening') ? '' : 'вечер') + '\n';
         }
@@ -167,15 +169,15 @@ const fillNearestPlaces = async (chatId, UserModel) => {
         }
 
 
-        const res = "Ближайшие места \n" +
+        const res = "<b>БЛИЖАЙШИЕ МЕСТА</b> \n" +
             "\n" +
-            "<b>Сегодня ("+ DATE_MATCH['today'] +")</b> \n" +
+            "<b><u>Сегодня ("+ DATE_MATCH['today'] +")</u></b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(todayChannels) +" \n" +
-            "<b>Завтра ("+ DATE_MATCH['tomorrow'] +")</b> \n" +
+            "<b><u>Завтра ("+ DATE_MATCH['tomorrow'] +")</u></b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(tomorrowChannels) +" \n" +
-            "<b>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</b> \n" +
+            "<b><u>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</u></b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(af_tmrwChannels) +" \n";
 

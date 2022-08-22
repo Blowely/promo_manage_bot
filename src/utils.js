@@ -50,7 +50,15 @@ const partFreeHandler = (data) => {
     }
 }
 
+const channelLinkHandler = (link) => {
+    const str = link.split('/');
+    if (str.length !== 4) return null;
+
+    return str[str.length - 1];
+}
+
 module.exports.checkCorrectTime = checkCorrectTime;
 module.exports.checkValidTime = checkValidTime;
 module.exports.viewValidTime = viewValidTime;
 module.exports.partFreeHandler = partFreeHandler;
+module.exports.channelLinkHandler = channelLinkHandler;

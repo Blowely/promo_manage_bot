@@ -43,10 +43,8 @@ const addChannel = async (chatId, bot) => {
     try {
         store.state_pos = 2;
         await User.update({state: 2}, { where: {chatId: chatId}});
-        const user = await User.findOne({ where: {chatId: chatId}});
-        console.log('>>> UserHere =', user);
 
-        await bot.sendMessage(chatId, 'Введи название канала', options.TIME);
+        await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME);
     } catch (e) {
         console.log('>>> err addChannel', e.message);
     }

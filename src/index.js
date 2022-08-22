@@ -4,7 +4,7 @@ const UserModel = require('./models').User;
 const fetch = require('node-fetch');
 
 
-const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler} = require("./utils");
+const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler, channelLinkHandler} = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
     postRemoteSelectedTimeInUser, postRemoteOrderCostInUser, postRemoteOrderCommentInUser
 } = require("./Services/objectRemoteService");
@@ -21,6 +21,7 @@ const {fillChannels} = require("./Services/objectService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
+const options = require('./options');
 
 const startBot = require('./Services/objectLocalService').startBot;
 const getMenu = require('./Services/objectLocalService').getMenu;
@@ -171,7 +172,11 @@ const start = async () => {
 
             console.log('>>>> userState =', userState);
             if (userState === '2') {
-                return await addRemoteChannel(text, chatId, UserModel, bot);
+                const res = channelLinkHandler(text);
+
+                if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
+
+                return await addRemoteChannel(res, chatId, UserModel, bot);
             }
 
             if (userState === '6') {
