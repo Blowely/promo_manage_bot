@@ -3,6 +3,7 @@ const options = require("../options");
 const {Order} = require("../models");
 const {DATE_MATCH} = require("../constants");
 const {emoji} = require("node-emoji");
+const dayjs = require("dayjs");
 const Channel = require("../models").Channel;
 
 const upsert = async (name, condition, Model) => {
@@ -105,7 +106,7 @@ const ordersHandler = async (date, channelChatId, channelName) => {
             where: {
                 chatId: channelChatId,
                 done: false,
-                date: DATE_MATCH[date]
+                date: DATE_MATCH[date] ?? date
             }
         })
 
@@ -161,11 +162,19 @@ const fillNearestPlaces = async (chatId, UserModel) => {
         let todayChannels = {};
         let tomorrowChannels = {};
         let af_tmrwChannels = {};
+        let af_tmrwChannelsN1 = {};
+        let af_tmrwChannelsN2 = {};
+
+        const afN1 = dayjs().add(3, 'day').format('DD/MM/YYYY');
+        const afN2 = dayjs().add(4, 'day').format('DD/MM/YYYY');
+
         console.log('>>> channelsHere =', channels);
         for (let channel of channels) {
             todayChannels[channel.chatId] = await ordersHandler('today', channel.chatId, channel.name)
             tomorrowChannels[channel.chatId] = await ordersHandler('tomorrow', channel.chatId, channel.name)
             af_tmrwChannels[channel.chatId] = await ordersHandler('af_tmrw', channel.chatId, channel.name)
+            af_tmrwChannelsN1[channel.chatId] = await ordersHandler(afN1, channel.chatId, channel.name)
+            af_tmrwChannelsN2[channel.chatId] = await ordersHandler(afN2, channel.chatId, channel.name)
         }
 
 
@@ -179,7 +188,13 @@ const fillNearestPlaces = async (chatId, UserModel) => {
             ""+ viewChannelsInNearPlaces(tomorrowChannels) +" \n" +
             "<b><u>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</u></b>" +
             "\n" +
-            ""+ viewChannelsInNearPlaces(af_tmrwChannels) +" \n";
+            ""+ viewChannelsInNearPlaces(af_tmrwChannels) +" \n" +
+            "<b><u>("+ afN1 +")</u></b>" +
+            "\n" +
+            ""+ viewChannelsInNearPlaces(af_tmrwChannelsN1) +" \n" +
+            "<b><u>("+ afN2 +")</u></b>" +
+            "\n" +
+            ""+ viewChannelsInNearPlaces(af_tmrwChannelsN2) +" \n";
 
         console.log('>>> resEnd =', res);
 
