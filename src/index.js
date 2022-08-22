@@ -4,7 +4,9 @@ const UserModel = require('./models').User;
 const fetch = require('node-fetch');
 
 
-const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler, channelLinkHandler} = require("./utils");
+const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler, channelLinkHandler, checkValidDate,
+    formateDate
+} = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
     postRemoteSelectedTimeInUser, postRemoteOrderCostInUser, postRemoteOrderCommentInUser
 } = require("./Services/objectRemoteService");
@@ -177,6 +179,16 @@ const start = async () => {
                 if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
 
                 return await addRemoteChannel(res, chatId, UserModel, bot);
+            }
+
+            if (userState === '4') {
+                const res = checkValidDate(text);
+
+                if (!res) { return await commandHandler('/select_channel', chatId)}
+                const formatedDate = formateDate(text);
+                console.log('>>> formDate =', formatedDate);
+                await User.update({selectedDate: formatedDate}, { where: {chatId: chatId}});
+                return await commandHandler('/select_place', chatId);
             }
 
             if (userState === '6') {

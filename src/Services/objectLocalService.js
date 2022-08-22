@@ -2,6 +2,7 @@ const options = require('../options');
 const {fillChannels, fillNearestPlaces} = require("./objectService");
 const {viewValidTime} = require("../utils");
 const {User} = require("../models");
+const dayjs = require("dayjs");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -67,7 +68,11 @@ const selectChannel = async (chatId, bot) => {
         store.state_pos = 4;
         await User.update({state: 4}, { where: {chatId: chatId}});
 
-        await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: 25.06.2022", options.DATE);
+        const firstDate = dayjs().format('DD.MM.YYYY');
+        const secDate = dayjs().format('DD/MM/YYYY');
+        const thirdDate = dayjs().format('DD-MM-YYYY');
+
+        await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: "+ firstDate +", "+ secDate +", "+ thirdDate +"", options.DATE);
     } catch (e) {
         console.log('>>> err selectChannel', e.message);
     }
