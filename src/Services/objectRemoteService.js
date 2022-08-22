@@ -63,10 +63,11 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
 
 
             const user = await User.findOne({ where: {chatId: chatIdTrue}});
+            await User.update({selectedCost: '', selectedComment: ''}, {where: {chatId: chatIdTrue}});
 
             const chatId = user.selectedChannel;
 
-            await Order.create({chatId, date: user.selectedDate, time: user.selectedTime, getPart});
+            await Order.create({chatId, date: user.selectedDate, time: user.selectedTime, getPart, cost: user.selectedCost, comment: user.selectedComment});
             await Channel.update({[selectedDay]: data}, {where: {chatId: user.selectedChannel}});
         } else {
             await bot.sendMessage(chatIdTrue, 'На это время место уже занято');

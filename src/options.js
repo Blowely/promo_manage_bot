@@ -62,7 +62,8 @@ const TIME = {
 }
 
 const MENU = {
-    parse_mode: 'HTML',
+    parse_mode: 'html',
+    disable_web_page_preview: 'True',
     reply_markup: JSON.stringify({
         inline_keyboard: [
             [{text: emoji.house + "Вернуться в меню", callback_data: 'back_to_menu'}]
