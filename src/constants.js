@@ -17,6 +17,13 @@ const DATE_MATCH = {
     'af_tmrw': dayjs().add(2, 'day').format('DD/MM/YYYY'),
 }
 
+const parts = [
+    'morning',
+    'day',
+    'evening'
+]
+
 module.exports.TG_COMMANDS = TG_COMMANDS;
 module.exports.FAST_TIME = FAST_TIME;
 module.exports.DATE_MATCH = DATE_MATCH;
+module.exports.parts = parts;
