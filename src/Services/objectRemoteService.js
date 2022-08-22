@@ -13,22 +13,6 @@ const addRemoteChannel = (name, chatId, UserModel, bot) => {
     }).catch((err) => console.log('err1 =', err));
 }
 
-const getRemoteChannel = (chatId) => {
-    return Channel
-        .findOne({where: { chatId: chatId }})
-        .then(channel => channel).catch(err => console.log('err = ', err))
-}
-
-const getRemoteChannels = (chatId, UserModel) => {
-    return getDataUser(chatId, UserModel).then(async user => {
-        const users = await UserModel.findAll();
-        console.log(users.every(user => user instanceof UserModel)); // true
-        console.log("All users:", JSON.stringify(users, null, 2));
-
-        return JSON.parse(user.channels);
-    })
-}
-
 const checkInfoTookPlaces = async (selectedChannel, selectedDate, chatId, bot) => {
     try {
         const orders = await Order.findAll({ where: { chatId: selectedChannel, date: selectedDate}});
@@ -163,8 +147,6 @@ const postRemoteOrderCommentInUser = async (comment, chatId) => {
 }
 
 module.exports.addRemoteChannel = addRemoteChannel;
-module.exports.getRemoteChannel = getRemoteChannel;
-module.exports.getRemoteChannels = getRemoteChannels;
 module.exports.postRemotePlace = postRemotePlace;
 module.exports.checkInfoTookPlaces = checkInfoTookPlaces;
 module.exports.postRemoteFreePlace = postRemoteFreePlace;
