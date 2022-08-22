@@ -50,7 +50,7 @@ const addChannel = async (chatId, bot) => {
         const user = await User.findOne({ where: {chatId: chatId}});
         console.log('>>> UserHere =', user);
 
-        await bot.sendMessage(chatId, 'Введи название канала', options.startOptions);
+        await bot.sendMessage(chatId, 'Введи название канала', options.TIME);
     } catch (e) {
         console.log('>>> err addChannel', e.message);
     }
@@ -79,14 +79,13 @@ const selectChannel = async (chatId, bot) => {
     }
 }
 
-const selectPlace = async (infoTookPlaces, selectedChannelName, selectedDay, chatId, bot, success = false) => {
+const selectPlace = async (dataTookPlaces, chatId, bot, success = false) => {
     try {
         if (success) {
             await bot.sendMessage(chatId, 'Пост успешно занят!' + emoji.white_check_mark);
         }
-        console.log('>>> infoTookPlaces =', infoTookPlaces);
+        console.log('>>> infoTookPlaces =', dataTookPlaces);
 
-        const infoTookPlaces =
 
         store.state_pos = 5;
         await User.update({state: 5}, { where: {chatId: chatId}});
@@ -97,11 +96,11 @@ const selectPlace = async (infoTookPlaces, selectedChannelName, selectedDay, cha
         await bot.sendMessage(chatId, "Канал: "+ channel.name +" \n" +
             "Дата: "+ user.selectedDate +" \n" +
             "\n" +
-            "#1) "+ (infoTookPlaces.morning.time ? infoTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
-            "#2) "+ (infoTookPlaces.day.time ? infoTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
-            "#3) "+ (infoTookPlaces.evening.time ? infoTookPlaces.evening.time + ' - занято' : '17:00 - 21:59 - свободно') + "\n" +
+            "#1) "+ (dataTookPlaces.morning.time ? dataTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
+            "#2) "+ (dataTookPlaces.day.time ? dataTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
+            "#3) "+ (dataTookPlaces.evening.time ? dataTookPlaces.evening.time + ' - занято' : '17:00 - 21:59 - свободно') + "\n" +
             "\n" +
-            "Выберите время, чтобы занять его", options.placesInfoHandler(infoTookPlaces));
+            "Выберите время, чтобы занять его", options.placesInfoHandler(dataTookPlaces));
     } catch (e) {
         console.log('>>> err selectPlace', e.message);
     }

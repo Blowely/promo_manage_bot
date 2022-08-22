@@ -36,7 +36,7 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDate, chatId, bot) =
     try {
         const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
 
-        const orders = await Order.findAll({ where: { chatId: selectedChannel, date: selectedDay}});
+        const orders = await Order.findAll({ where: { chatId: selectedChannel, date: selectedDate}});
 
         const response = {
             date: '',
@@ -56,7 +56,7 @@ const checkInfoTookPlaces = async (selectedChannel, selectedDate, chatId, bot) =
 
         return response;
     } catch (e) {
-        console.log('e =', e.message);
+        console.log('e checkInfoTookPlaces =', e.message);
         bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
     }
 
@@ -94,6 +94,7 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
 
 
     } catch (e) {
+        console.log('e postRemotePlace =', e.message);
         bot.sendMessage(chatIdTrue, 'Что-то пошло не так =' + e.message);
     }
 }
@@ -126,7 +127,7 @@ const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, b
         await Order.update({done: true}, {where: {chatId: selectedChannel, date, getPart: selectedPart, done: false}})
 
     } catch (e) {
-        console.log('e =', e.message);
+        console.log('e postRemoteFreePlace =', e.message);
         bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);
     }
 }

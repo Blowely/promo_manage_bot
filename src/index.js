@@ -1,6 +1,8 @@
 const TelegramApi = require('node-telegram-bot-api');
 const sequelize = require('./db');
 const UserModel = require('./models').User;
+const fetch = require('node-fetch');
+
 
 const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler} = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
@@ -95,7 +97,7 @@ const commandHandler = async (command, chatId) => {
                     const user = await User.findOne({ where: {chatId: chatId}});
                     const dataTookPlaces = await checkInfoTookPlaces(user.selectedChannel, user.selectedDate, chatId, bot);
 
-                    await selectPlace(dataTookPlaces, selectedChannelName, selectedDay, chatId, bot);
+                    await selectPlace(dataTookPlaces, chatId, bot);
                     break;
                 } catch (e) {
                     console.log('e =', e);
@@ -116,8 +118,9 @@ const commandHandler = async (command, chatId) => {
             case "/view_result": {
                 console.log('>>> view result');
                 await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
-                infoTookPlaces = await checkInfoTookPlaces(selectedChannel, selectedDay, chatId, bot);
-                await selectPlace(infoTookPlaces, selectedChannelName, selectedDay, chatId, bot, true);
+                const user = await User.findOne({ where: {chatId: chatId}});
+                const dataTookPlaces = await checkInfoTookPlaces(user.selectedChannel, user.selectedDate, chatId, bot);
+                await selectPlace(dataTookPlaces, chatId, bot, true);
                 break;
             }
             case "/add_cost": {
@@ -144,9 +147,13 @@ const start = async () => {
         await sequelize.authenticate();
         await sequelize.sync();
         //await sequelize.sync({ force: true });
+        /*const res = await fetch('https://t.me/jolybells');
+        const data = res.json();
+        console.log('>>> data =', data);*/
     } catch (e) {
         console.log('Подключение к бд сломалось ', e);
     }
+
 
     bot.setMyCommands([
         {command: '/start', description: 'Запуск бота'},
