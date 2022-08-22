@@ -1,9 +1,6 @@
 const {upsert, fillChannels} = require("./objectService");
 const {Channel, Order, User} = require("../models");
 const {getMenu} = require("./objectLocalService");
-const {v4} = require("uuid");
-const {Model} = require("sequelize");
-const {logger} = require("sequelize/lib/utils/logger");
 const {DATE_MATCH} = require("../constants");
 
 const addRemoteChannel = (name, chatId, UserModel, bot) => {
@@ -34,8 +31,6 @@ const getRemoteChannels = (chatId, UserModel) => {
 
 const checkInfoTookPlaces = async (selectedChannel, selectedDate, chatId, bot) => {
     try {
-        const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
-
         const orders = await Order.findAll({ where: { chatId: selectedChannel, date: selectedDate}});
 
         const response = {
@@ -66,8 +61,6 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
     try {
         console.log('>>> selectedChannel =', selectedChannel);
         const channel = await Channel.findOne({ where: { chatId: selectedChannel } });
-        console.log('123');
-        //if (true//!channel[selectedDay]) {
 
         if (channel) {
             let data = '';
@@ -102,30 +95,9 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
 const postRemoteFreePlace = async (selectedChannel, selectedDay, selectedPart, bot, chatId) => {
     try {
         console.log('>>> selectedChannel =', selectedChannel);
-
         const date = DATE_MATCH[selectedDay];
 
-        /*if (channel) {
-            let data = '';
-            //const obj =  {get: selectedPart, time: selectedTime}
-            console.log('channel[selectedDay]=', channel[selectedDay]);
-            const items = channel[selectedDay].split(';');
-            for (let item of items) {
-                if (item) {
-                    item = JSON.parse(item);
-                    if (item.get !== selectedPart) {
-                        data += JSON.stringify(item) + ';'
-                    }
-                }
-            }
-            console.log('>>> data =', data);
-            await Channel.update({[selectedDay]: data}, {where: {chatId: selectedChannel}});
-
-        } else {
-            await bot.sendMessage(chatId, 'На это время место уже занято');
-        }*/
         await Order.update({done: true}, {where: {chatId: selectedChannel, date, getPart: selectedPart, done: false}})
-
     } catch (e) {
         console.log('e postRemoteFreePlace =', e.message);
         bot.sendMessage(chatId, 'Что-то пошло не так =' + e.message);

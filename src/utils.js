@@ -50,13 +50,6 @@ const partFreeHandler = (data) => {
     }
 }
 
-
-const dateViewHandler = (date) => {
-    /*switch (date) {
-        ''
-    }*/
-}
-
 module.exports.checkCorrectTime = checkCorrectTime;
 module.exports.checkValidTime = checkValidTime;
 module.exports.viewValidTime = viewValidTime;
