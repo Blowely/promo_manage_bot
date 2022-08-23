@@ -12,6 +12,7 @@ const redirectToPrevPage = async (data, chatId, bot, UserModel) => {
         switch (user.state) {
             case '1': await getMenu(chatId, bot, UserModel); return;
             case '2': await getMenu(chatId, bot, UserModel); return;
+            case '2.1': await getMenu(chatId, bot, UserModel); return;
             case '3': await getMenu(chatId, bot, UserModel); return;
             case '4': await getMyChannels(chatId, bot); return;
             case '5': await selectChannel(chatId, bot); return;

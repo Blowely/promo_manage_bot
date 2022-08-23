@@ -72,7 +72,7 @@ const selectChannel = async (chatId, bot) => {
         const secDate = dayjs().format('DD/MM/YYYY');
         const thirdDate = dayjs().format('DD-MM-YYYY');
 
-        await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли время сюда в формате: "+ firstDate +", "+ secDate +", "+ thirdDate +"", options.DATE);
+        await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли сюда в одном из форматов: "+ firstDate +", "+ secDate +", "+ thirdDate +"", options.DATE);
     } catch (e) {
         console.log('>>> err selectChannel', e.message);
     }

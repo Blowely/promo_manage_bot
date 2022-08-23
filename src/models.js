@@ -11,6 +11,7 @@ const User = sequelize.define('user', {
     selectedOrder: DataTypes.STRING,
     selectedCost: {type: DataTypes.STRING(1000)},
     selectedComment: {type: DataTypes.STRING(1000)},
+    selectedLink: {type: DataTypes.STRING(1000)},
     state: DataTypes.STRING,
 }, {
     freezeTableName: true,
@@ -21,6 +22,7 @@ const Channel = sequelize.define('channel', {
     chatId: {type: DataTypes.STRING},
     //chatId: {type: DataTypes.INTEGER},
     name: {type: DataTypes.STRING},
+    link: DataTypes.STRING,
     //channels: {type: DataTypes.ARRAY({id: DataTypes.INTEGER, name: DataTypes.STRING}), defaultValue: []}
     today: {type: DataTypes.STRING(10000), defaultValue: ''},
     tomorrow: {type: DataTypes.STRING(10000), defaultValue: ''},

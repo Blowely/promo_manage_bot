@@ -30,7 +30,7 @@ const upsert = async (name, condition, Model) => {
 
     await Model.update({channels: data}, {where: condition});
 
-    return await Channel.create({chatId, name});
+    return await Channel.create({chatId, name, link: user.selectedLink});
 
     /*return Channel.destroy({
         where: {},
@@ -98,7 +98,7 @@ const fillChannels = async (chatId, UserModel) => {
     }
 }
 
-const ordersHandler = async (date, channelChatId, channelName) => {
+const ordersHandler = async (date, channelChatId, channelName, link) => {
     try {
         const day = {};
 
@@ -111,6 +111,7 @@ const ordersHandler = async (date, channelChatId, channelName) => {
         })
 
         day.name = channelName;
+        day.link = link;
 
         if (!orders.length) { return day; }
 
@@ -142,7 +143,7 @@ const viewChannelsInNearPlaces = (channelsInDay) => {
         const channelNames = Object.keys(channelsInDay);
 
         for (let i = 0; i < channelNames.length; i++) {
-            const link = 'https://t.me/'+ channelsInDay[channelNames[i]].name + '';
+            const link = channelsInDay[channelNames[i]].link;
             res += '<a href="'+ link +'">'+ channelsInDay[channelNames[i]].name + '</a>: ' + (channelsInDay[channelNames[i]].hasOwnProperty('morning') ? '' : ' утро') +
                 ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('day') ? '' : 'день') +
                 ' ' + (channelsInDay[channelNames[i]].hasOwnProperty('evening') ? '' : 'вечер') + '\n';
@@ -170,11 +171,11 @@ const fillNearestPlaces = async (chatId, UserModel) => {
 
         console.log('>>> channelsHere =', channels);
         for (let channel of channels) {
-            todayChannels[channel.chatId] = await ordersHandler('today', channel.chatId, channel.name)
-            tomorrowChannels[channel.chatId] = await ordersHandler('tomorrow', channel.chatId, channel.name)
-            af_tmrwChannels[channel.chatId] = await ordersHandler('af_tmrw', channel.chatId, channel.name)
-            af_tmrwChannelsN1[channel.chatId] = await ordersHandler(afN1, channel.chatId, channel.name)
-            af_tmrwChannelsN2[channel.chatId] = await ordersHandler(afN2, channel.chatId, channel.name)
+            todayChannels[channel.chatId] = await ordersHandler('today', channel.chatId, channel.name, channel.link)
+            tomorrowChannels[channel.chatId] = await ordersHandler('tomorrow', channel.chatId, channel.name, channel.link)
+            af_tmrwChannels[channel.chatId] = await ordersHandler('af_tmrw', channel.chatId, channel.name, channel.link)
+            af_tmrwChannelsN1[channel.chatId] = await ordersHandler(afN1, channel.chatId, channel.name, channel.link)
+            af_tmrwChannelsN2[channel.chatId] = await ordersHandler(afN2, channel.chatId, channel.name, channel.link)
         }
 
 

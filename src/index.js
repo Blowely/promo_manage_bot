@@ -24,6 +24,7 @@ const {fillChannels} = require("./Services/objectService");
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
 const options = require('./options');
+const {emoji} = require("node-emoji");
 
 const startBot = require('./Services/objectLocalService').startBot;
 const getMenu = require('./Services/objectLocalService').getMenu;
@@ -173,13 +174,33 @@ const start = async () => {
             const userState = user?.state;
 
             console.log('>>>> userState =', userState);
+
+            if (TG_COMMANDS.hasOwnProperty(text)) {
+                return await commandHandler(TG_COMMANDS[text], chatId);
+            }
+
             if (userState === '2') {
-                const res = channelLinkHandler(text);
+                try {
+                    const res = channelLinkHandler(text);
 
-                if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
+                    if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
 
+                    await UserModel.update({selectedLink: text, state: 2.1}, {where: {chatId}});
+                    return await bot.sendMessage(chatId,  'Отлично! Теперь пришли название канала', options.TIME);
+                } catch (e) {
+                    console.log('e userState === 2', e.message);
+                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                }
+            }
 
-                //return await addRemoteChannel(res, chatId, UserModel, bot);
+            if (userState === '2.1') {
+                try {
+                    await UserModel.update({state: 2}, {where: {chatId}});
+                    return await addRemoteChannel(text, chatId, UserModel, bot);
+                } catch (e) {
+                    console.log('e userState === 2.1', e.message);
+                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                }
             }
 
             if (userState === '4') {
@@ -220,7 +241,7 @@ const start = async () => {
                 return;
             }
 
-            await commandHandler(TG_COMMANDS[text], chatId);
+
         } catch (e) {
             //return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
         }
