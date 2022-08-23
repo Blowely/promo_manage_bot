@@ -180,19 +180,19 @@ const fillNearestPlaces = async (chatId, UserModel) => {
 
         const res = "<b>БЛИЖАЙШИЕ МЕСТА</b> \n" +
             "\n" +
-            "<b><u>Сегодня ("+ DATE_MATCH['today'] +")</u></b>" +
+            "<b>Сегодня ("+ DATE_MATCH['today'] +")</b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(todayChannels) +" \n" +
-            "<b><u>Завтра ("+ DATE_MATCH['tomorrow'] +")</u></b>" +
+            "<b>Завтра ("+ DATE_MATCH['tomorrow'] +")</b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(tomorrowChannels) +" \n" +
-            "<b><u>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</u></b>" +
+            "<b>Послезавтра ("+ DATE_MATCH['af_tmrw'] +")</b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(af_tmrwChannels) +" \n" +
-            "<b><u>("+ afN1 +")</u></b>" +
+            "<b>("+ afN1 +")</b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(af_tmrwChannelsN1) +" \n" +
-            "<b><u>("+ afN2 +")</u></b>" +
+            "<b>("+ afN2 +")</b>" +
             "\n" +
             ""+ viewChannelsInNearPlaces(af_tmrwChannelsN2) +" \n";
 

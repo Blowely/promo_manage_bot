@@ -92,8 +92,8 @@ const selectPlace = async (dataTookPlaces, chatId, bot, success = false) => {
         const user = await User.findOne({ where: {chatId: chatId}});
         const channel = await Channel.findOne({ where: {chatId: user.selectedChannel}});
 
-        await bot.sendMessage(chatId, "Канал: "+ channel.name +" \n" +
-            "Дата: "+ user.selectedDate +" \n" +
+        await bot.sendMessage(chatId, "Канал: <b>"+ channel.name +"</b> \n" +
+            "Дата: <b>"+ user.selectedDate +"</b> \n" +
             "\n" +
             "#1) "+ (dataTookPlaces.morning.time ? dataTookPlaces.morning.time + ' - занято' : '07:00 - 12:00 - свободно') + "\n" +
             "#2) "+ (dataTookPlaces.day.time ? dataTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
@@ -125,11 +125,11 @@ const view_total = async (chatId, bot) => {
         const user = await User.findOne({ where: {chatId: chatId}});
         const channel = await Channel.findOne({ where: {chatId: user.selectedChannel}});
 
-        await bot.sendMessage(chatId, "Канал: "+ channel.name +" \n" +
+        await bot.sendMessage(chatId, "Канал: <b>"+ channel.name +"</b> \n" +
             "\n" +
-            "Дата занятия поста: "+ user.selectedDate +" \n" +
-            "Время: "+ user.selectedTime +" \n" +
-            "Цена: "+ (user.selectedCost ?? '') +"\n" +
+            "Дата занятия поста: <b>"+ user.selectedDate +"</b> \n" +
+            "Время: <b>"+ user.selectedTime +"</b> \n" +
+            "Цена: <b>"+ (user.selectedCost ?? '') +"</b>\n" +
             "Комментарий: "+ (user.selectedComment ?? '') +"\n", options.TOTAL_INFO);
     } catch (e) {
         console.log('e view_total =', e.message);

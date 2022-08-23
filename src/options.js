@@ -42,6 +42,7 @@ const placesInfoHandler = (infoTookPlaces) => {
                 {text:"Занять быстро 17:00 - 21:59 ", callback_data:  JSON.stringify({get_fast: 'get_evening_fast'})}];
 
     return {
+        parse_mode: 'html',
         reply_markup: JSON.stringify({
             inline_keyboard: [
                 morning,
@@ -72,6 +73,7 @@ const MENU = {
 }
 
 const TOTAL_INFO = {
+    parse_mode: 'html',
     reply_markup: JSON.stringify({
         inline_keyboard: [
             [{text:emoji.floppy_disk + "Сохранить", callback_data: JSON.stringify({save: Date.now()})},

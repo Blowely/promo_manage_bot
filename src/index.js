@@ -178,7 +178,8 @@ const start = async () => {
 
                 if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
 
-                return await addRemoteChannel(res, chatId, UserModel, bot);
+
+                //return await addRemoteChannel(res, chatId, UserModel, bot);
             }
 
             if (userState === '4') {
