@@ -141,8 +141,8 @@ const commandHandler = async (command, chatId) => {
                 return;
         }
     } catch (e) {
-        /*console.log('eeee =', e);
-        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);*/
+        console.log('eeee =', e);
+        return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
     }
 }
 
