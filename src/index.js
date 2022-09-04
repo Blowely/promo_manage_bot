@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 
 
 const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler, channelLinkHandler, checkValidDate,
-    formateDate
+    formateDate, countChannelPlacesHandler
 } = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
     postRemoteSelectedTimeInUser, postRemoteOrderCostInUser, postRemoteOrderCommentInUser
@@ -195,10 +195,24 @@ const start = async () => {
 
             if (userState === '2.1') {
                 try {
-                    await UserModel.update({state: 2}, {where: {chatId}});
-                    return await addRemoteChannel(text, chatId, UserModel, bot);
+                    if (!text) { return await bot.sendMessage(chatId, 'Пришли название канала', options.TIME)}
+
+                    await UserModel.update({state: 2.2, selectedChannelName: text}, {where: {chatId}});
+                    return await bot.sendMessage(chatId,  'Отлично! Теперь пришли кол-во рекалмных мест (до 10)', options.TIME);
                 } catch (e) {
                     console.log('e userState === 2.1', e.message);
+                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                }
+            }
+
+            if (userState === '2.2') {
+                try {
+                    if (!countChannelPlacesHandler(text)) { return await bot.sendMessage(chatId, 'Пришли кол-во рекалмных мест (до 10)', options.TIME)}
+
+                    await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
+                    return await addRemoteChannel(text, chatId, UserModel, bot);
+                } catch (e) {
+                    console.log('e userState === 2.2', e.message);
                     await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
                 }
             }
@@ -207,6 +221,7 @@ const start = async () => {
                 const res = checkValidDate(text);
 
                 if (!res) { return await commandHandler('/select_channel', chatId)}
+
                 const formatedDate = formateDate(text);
                 console.log('>>> formDate =', formatedDate);
                 await User.update({selectedDate: formatedDate}, { where: {chatId: chatId}});

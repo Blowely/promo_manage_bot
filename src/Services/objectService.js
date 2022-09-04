@@ -30,7 +30,12 @@ const upsert = async (name, condition, Model) => {
 
     await Model.update({channels: data}, {where: condition});
 
-    return await Channel.create({chatId, name, link: user.selectedLink});
+    return await Channel.create({
+        chatId,
+        name: user.selectedChannelName,
+        link: user.selectedLink,
+        countPlaces: user.selectedCountPlaces
+    });
 
     /*return Channel.destroy({
         where: {},

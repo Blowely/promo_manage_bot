@@ -75,6 +75,10 @@ const channelLinkHandler = (link) => {
     return str[str.length - 1];
 }
 
+const countChannelPlacesHandler = (count) => {
+    return (count > 0 && count <= 10);
+}
+
 module.exports.checkCorrectTime = checkCorrectTime;
 module.exports.checkValidTime = checkValidTime;
 module.exports.checkValidDate = checkValidDate;
@@ -82,3 +86,4 @@ module.exports.formateDate = formateDate;
 module.exports.viewValidTime = viewValidTime;
 module.exports.partFreeHandler = partFreeHandler;
 module.exports.channelLinkHandler = channelLinkHandler;
+module.exports.countChannelPlacesHandler = countChannelPlacesHandler;
