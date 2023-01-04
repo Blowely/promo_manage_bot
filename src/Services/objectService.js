@@ -1,37 +1,26 @@
 const {v4} = require("uuid");
 const options = require("../options");
-const {Order} = require("../models");
+const {Order, ChannelModel} = require("../models");
 const {DATE_MATCH} = require("../constants");
 const {emoji} = require("node-emoji");
 const dayjs = require("dayjs");
 const Channel = require("../models").Channel;
 
-const upsert = async (name, condition, Model) => {
-    const chatId = v4();
+const upsert = async (name, condition, UserModel, ChannelModel) => {
+    const generatedId = v4();
     //const chatId = condition.chatId;
-    const user = await Model.findOne({ where: condition });
+    const user = await UserModel.findOne({ where: condition });
+    console.log('12312')
+    const userChannels = await ChannelModel.findAll({ where: { chatId: condition?.chatId.toString() }});
+    console.log('userChannels =', userChannels);
 
     const deleted = false;
     if (!user) {
         console.log('Пользователь не найден!')
     }
 
-    let data = '';
-    if (user.channels !== '') {
-        console.log('here');
-        const splitStr = user.channels.split(',');
-
-        data = '' + user.channels + ',' + chatId + '';
-    } else {
-        console.log('else')
-        data = '' + chatId + '';
-    }
-    console.log('data =', data);
-
-    await Model.update({channels: data}, {where: condition});
-
     return await Channel.create({
-        chatId,
+        chatId: condition.chatId,
         name: user.selectedChannelName,
         link: user.selectedLink,
         countPlaces: user.selectedCountPlaces
@@ -43,20 +32,16 @@ const upsert = async (name, condition, Model) => {
     })*/
 }
 
-const getUserChannels = async (chatId, UserModel) => {
+const getUserChannels = async (chatId, ChannelModel) => {
     try {
         const channels = [];
 
-        const user = await UserModel.findOne({where:{chatId: chatId}});
-        console.log('>>> user =', user);
 
-        if (user && user.channels) {
-            const userChannels = user.channels.split(',');
-
-            for (const channel of userChannels) {
-                const foundChannel = await Channel.findOne({where:{chatId: channel}});
-                if (foundChannel) { channels.push(foundChannel.dataValues) }
-            }
+        if (chatId) {
+            console.log('ChannelModel =', ChannelModel);
+            const userChannels = await ChannelModel.findAll({where:{chatId: chatId}});
+            console.log('>>> userChannels =', userChannels);
+            return userChannels;
         }
 
         return channels;
@@ -65,7 +50,7 @@ const getUserChannels = async (chatId, UserModel) => {
     }
 }
 
-const fillChannels = async (chatId, UserModel) => {
+const fillChannels = async (chatId, ChannelModel) => {
     try {
         const orders = await Order.findAll();
         console.log('>>> orders =', orders);
@@ -74,9 +59,9 @@ const fillChannels = async (chatId, UserModel) => {
             inline_keyboard: []
         })
 
-        const channels = await getUserChannels(chatId,UserModel);
+        const channels = await getUserChannels(chatId, ChannelModel);
 
-        if (channels.length > 0) {
+        if (channels?.length > 0) {
             options.CHANNELS.reply_markup = JSON.stringify({inline_keyboard: []});
 
             for (const channel of channels) {
@@ -161,9 +146,9 @@ const viewChannelsInNearPlaces = (channelsInDay) => {
 
 }
 
-const fillNearestPlaces = async (chatId, UserModel) => {
+const fillNearestPlaces = async (chatId, ChannelModel) => {
     try {
-        const channels = await getUserChannels(chatId,UserModel);
+        const channels = await getUserChannels(chatId, ChannelModel);
 
         let todayChannels = {};
         let tomorrowChannels = {};

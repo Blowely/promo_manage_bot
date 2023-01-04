@@ -1,6 +1,7 @@
 const TelegramApi = require('node-telegram-bot-api');
 const sequelize = require('./db');
 const UserModel = require('./models').User;
+const ChannelModel = require('./models').Channel;
 const fetch = require('node-fetch');
 
 
@@ -62,7 +63,7 @@ const commandHandler = async (command, chatId) => {
                         .catch((err) => console.log('err =', err))
                 }
 
-                await startBot(chatId, bot, UserModel);
+                await startBot(chatId, bot, UserModel, ChannelModel);
                 break;
             }
             case "/menu": {
@@ -77,7 +78,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/my_channels": {
                 console.log('>>> my channels');
-                await getMyChannels(chatId, bot);
+                await getMyChannels(chatId, bot, UserModel, ChannelModel);
                 break;
             }
             case "/add_channel": {
@@ -87,7 +88,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/near": {
                 console.log('>>> get nearest places');
-                await getNearestPlaces(chatId, bot, UserModel);
+                await getNearestPlaces(chatId, bot, ChannelModel);
                 break;
             }
             case "/select_channel": {
@@ -210,7 +211,7 @@ const start = async () => {
                     if (!countChannelPlacesHandler(text)) { return await bot.sendMessage(chatId, 'Пришли кол-во рекалмных мест (до 10)', options.TIME)}
 
                     await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
-                    return await addRemoteChannel(text, chatId, UserModel, bot);
+                    return await addRemoteChannel(text, chatId, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
                     await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
@@ -280,7 +281,7 @@ const start = async () => {
                 await commandHandler('/menu', chatId);
             } else {
                 console.log('>>> return to the prev page');
-                await redirectToPrevPage(data, chatId, bot, UserModel);
+                await redirectToPrevPage(data, chatId, bot, UserModel, ChannelModel);
                 parsedData = data;
             }
         }

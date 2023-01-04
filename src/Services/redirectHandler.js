@@ -3,7 +3,7 @@ const {getMenu, selectChannel, getMyChannels, selectPlace, view_total} = require
 const store = require('../store').store;
 
 
-const redirectToPrevPage = async (data, chatId, bot, UserModel) => {
+const redirectToPrevPage = async (data, chatId, bot, UserModel, ChannelModel) => {
     try {
         const user = await UserModel.findOne({where: {chatId}});
         //TODO SWITCH CASE on DATA that received on props
@@ -14,7 +14,7 @@ const redirectToPrevPage = async (data, chatId, bot, UserModel) => {
             case '2': await getMenu(chatId, bot, UserModel); return;
             case '2.1': await getMenu(chatId, bot, UserModel); return;
             case '3': await getMenu(chatId, bot, UserModel); return;
-            case '4': await getMyChannels(chatId, bot); return;
+            case '4': await getMyChannels(chatId, bot, UserModel, ChannelModel); return;
             case '5': await selectChannel(chatId, bot); return;
             case '6': await selectChannel(chatId, bot); return;
             case '7': await selectChannel(chatId, bot); return;

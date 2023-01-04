@@ -1,7 +1,7 @@
 const options = require('../options');
 const {fillChannels, fillNearestPlaces} = require("./objectService");
 const {viewValidTime} = require("../utils");
-const {User} = require("../models");
+const {User, ChannelModel} = require("../models");
 const dayjs = require("dayjs");
 
 const store = require('../store').store;
@@ -10,7 +10,7 @@ const Channel = require("../models").Channel;
 var emoji = require('node-emoji').emoji;
 
 
-const startBot = async (chatId, bot, UserModel) => {
+const startBot = async (chatId, bot, UserModel, ChannelModel) => {
     try {
         store.state_pos = 1;
         await UserModel.update({state: 1}, { where: {chatId: chatId}});
@@ -18,10 +18,8 @@ const startBot = async (chatId, bot, UserModel) => {
         await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
             options.START_OPTIONS);
 
-        const user = await UserModel.findOne({ where: {chatId: chatId}});
-        console.log('userChannels =', user.dataValues);
 
-        return await fillChannels(chatId, UserModel);
+        return await fillChannels(chatId, ChannelModel);
     } catch (e) {
         console.log('e1 =',e);
     }
@@ -51,12 +49,12 @@ const addChannel = async (chatId, bot) => {
     }
 }
 
-const getMyChannels = async (chatId, bot) => {
+const getMyChannels = async (chatId, bot, UserModel, ChannelModel) => {
     try {
         store.state_pos = 3;
-        await User.update({state: 3}, { where: {chatId: chatId}});
+        await UserModel.update({state: 3}, { where: {chatId: chatId}});
 
-        await fillChannels(chatId, User);
+        await fillChannels(chatId, ChannelModel);
         await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
     } catch (e) {
         console.log('>>> err getMyChannels', e.message);
@@ -158,12 +156,12 @@ const addComment = async (chatId, bot) => {
     }
 }
 
-const getNearestPlaces = async (chatId, bot, UserModel) => {
+const getNearestPlaces = async (chatId, bot, ChannelModel) => {
     try {
         store.state_pos = 8;
         await User.update({state: 8}, { where: {chatId: chatId}});
 
-        const text = await fillNearestPlaces(chatId, UserModel);
+        const text = await fillNearestPlaces(chatId, ChannelModel);
 
         await bot.sendMessage(chatId, text, options.MENU);
 

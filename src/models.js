@@ -21,7 +21,7 @@ const User = sequelize.define('user', {
 
 const Channel = sequelize.define('channel', {
     id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-    chatId: {type: DataTypes.STRING},
+    chatId: {type: DataTypes.INTEGER},
     //chatId: {type: DataTypes.INTEGER},
     name: {type: DataTypes.STRING},
     link: DataTypes.STRING,
