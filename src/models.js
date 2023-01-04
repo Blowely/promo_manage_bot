@@ -14,6 +14,7 @@ const User = sequelize.define('user', {
     selectedLink: {type: DataTypes.STRING(1000)},
     selectedCountPlaces: {type: DataTypes.STRING(1000)},
     selectedChannelName: {type: DataTypes.STRING(1000)},
+    idsDeleteMessage: {type: DataTypes.ARRAY(DataTypes.INTEGER)},
     state: DataTypes.STRING,
 }, {
     freezeTableName: true,
@@ -35,7 +36,7 @@ const Channel = sequelize.define('channel', {
 
 const Order = sequelize.define('order', {
     id: {type: DataTypes.INTEGER, primaryKey: true, unique: true, autoIncrement: true},
-    chatId: {type: DataTypes.STRING},
+    chatId: {type: DataTypes.INTEGER},
     //chatId: {type: DataTypes.INTEGER},
     date: {type: DataTypes.STRING},
     time: {type: DataTypes.STRING},

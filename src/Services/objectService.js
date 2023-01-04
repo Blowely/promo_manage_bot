@@ -150,6 +150,10 @@ const fillNearestPlaces = async (chatId, ChannelModel) => {
     try {
         const channels = await getUserChannels(chatId, ChannelModel);
 
+        if (!channels?.length) {
+            return "";
+        }
+
         let todayChannels = {};
         let tomorrowChannels = {};
         let af_tmrwChannels = {};
