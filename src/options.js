@@ -1,5 +1,19 @@
 const {infoTookPlaces} = require("./index.js");
 const {emoji} = require("node-emoji");
+
+const getStartOptionsWithMessageId = (messageId) => {
+    return {
+        reply_markup: JSON.stringify({
+            inline_keyboard: [
+                [{text: emoji.scroll + "Мои каналы", callback_data: "/my_channels"},{text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON.stringify(
+                    {toPage: "/add_channel", editMessageId: messageId})
+                }],
+                [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
+            ]
+        })
+    }
+}
+
 const START_OPTIONS = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
@@ -54,6 +68,16 @@ const placesInfoHandler = (infoTookPlaces) => {
     }
 }
 
+const getRevokeOption = (editMessageId) => {
+    return {
+        reply_markup: JSON.stringify({
+            inline_keyboard: [
+                [{text: emoji.no_entry_sign + "Отмена", callback_data: JSON.stringify({editMessageId: editMessageId})}]
+            ]
+        })
+    }
+}
+
 const TIME = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
@@ -86,10 +110,12 @@ const TOTAL_INFO = {
 
 
 module.exports.START_OPTIONS = START_OPTIONS;
+module.exports.getStartOptionsWithMessageId = getStartOptionsWithMessageId;
 module.exports.CHANNELS = CHANNELS;
 module.exports.DATE = DATE;
 module.exports.PLACES_INFO = PLACES_INFO;
 module.exports.placesInfoHandler = placesInfoHandler;
 module.exports.TIME = TIME;
+module.exports.getRevokeOption = getRevokeOption;
 module.exports.TOTAL_INFO = TOTAL_INFO;
 module.exports.MENU = MENU;

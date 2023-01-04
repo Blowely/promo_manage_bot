@@ -1,3 +1,4 @@
+const options = require("./options");
 const checkCorrectTime = (str) => {
     try {
         console.log('>>> str =', str);
@@ -79,6 +80,32 @@ const countChannelPlacesHandler = (count) => {
     return (count > 0 && count <= 10);
 }
 
+const removeMessages = async (chatId, bot, deleteMessageIds) => {
+    try {
+        console.log('>>> removeMessages is called')
+        if (deleteMessageIds?.length) {
+            for (let messageId of deleteMessageIds) {
+                await bot.deleteMessage(chatId, messageId);
+            }
+        }
+    } catch (e) {
+        console.log('e removeMessages =', e.message);
+    }
+}
+
+const editMessage = async (chatId, bot, editMessageId) => {
+    try {
+        console.log('>>> editMessage is called')
+        if (editMessageId?.length) {
+            const res = await bot.editMessageText('sdcds', {...options.START_OPTIONS, chat_id: chatId, message_id: editMessageId[0]} );
+            console.log('>>> res =', res);
+            return res;
+        }
+    } catch (e) {
+        console.log('e editMessage =', e.message);
+    }
+}
+
 module.exports.checkCorrectTime = checkCorrectTime;
 module.exports.checkValidTime = checkValidTime;
 module.exports.checkValidDate = checkValidDate;
@@ -87,3 +114,5 @@ module.exports.viewValidTime = viewValidTime;
 module.exports.partFreeHandler = partFreeHandler;
 module.exports.channelLinkHandler = channelLinkHandler;
 module.exports.countChannelPlacesHandler = countChannelPlacesHandler;
+module.exports.removeMessages = removeMessages;
+module.exports.editMessage = editMessage;

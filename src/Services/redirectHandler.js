@@ -1,4 +1,5 @@
 const {getMenu, selectChannel, getMyChannels, selectPlace, view_total} = require("./objectLocalService");
+const {removeMessages, editMessage} = require("../utils");
 
 const store = require('../store').store;
 
@@ -6,12 +7,13 @@ const store = require('../store').store;
 const redirectToPrevPage = async (data, chatId, bot, UserModel, ChannelModel) => {
     try {
         const user = await UserModel.findOne({where: {chatId}});
+
         //TODO SWITCH CASE on DATA that received on props
         console.log('>>> user.state =', user.state);
 
         switch (user.state) {
             case '1': await getMenu(chatId, bot, UserModel); return;
-            case '2': await getMenu(chatId, bot, UserModel); return;
+            case '2': await getMenu(chatId, bot, UserModel, null, user.deleteMessageIds); return;
             case '2.1': await getMenu(chatId, bot, UserModel); return;
             case '3': await getMenu(chatId, bot, UserModel); return;
             case '4': await getMyChannels(chatId, bot, UserModel, ChannelModel); return;

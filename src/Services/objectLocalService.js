@@ -1,8 +1,9 @@
 const options = require('../options');
 const {fillChannels, fillNearestPlaces} = require("./objectService");
-const {viewValidTime} = require("../utils");
+const {viewValidTime, removeMessages} = require("../utils");
 const {User, ChannelModel} = require("../models");
 const dayjs = require("dayjs");
+const {getRevokeOption, getStartOptionsWithMessageId} = require("../options");
 
 const store = require('../store').store;
 const Channel = require("../models").Channel;
@@ -12,50 +13,60 @@ var emoji = require('node-emoji').emoji;
 
 const startBot = async (chatId, bot, UserModel, ChannelModel) => {
     try {
-        store.state_pos = 1;
-        await UserModel.update({state: 1}, { where: {chatId: chatId}});
-
-        await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
+        const message = await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
             options.START_OPTIONS);
 
-
+        await UserModel.update({state: 1, deleteMessageIds: [message.message_id]}, { where: {chatId: chatId}});
         return await fillChannels(chatId, ChannelModel);
     } catch (e) {
         console.log('e1 =',e);
     }
 }
 
-const getMenu = async (chatId, bot, UserModel, option) => {
+const getMenu = async (chatId, bot, UserModel, option, editMessageId) => {
     console.log('>>> getMenuFunc is called');
-    store.state_pos = 1;
-    await UserModel.update({state: 1}, { where: {chatId: chatId}});
+    let messageIds = [];
+    let message = undefined;
+
+    const dataOptions = getStartOptionsWithMessageId(editMessageId)
 
     if (option?.success) {
-        await bot.sendMessage(chatId, 'Канал успешно добавлен ' + emoji.white_check_mark);
-        return await bot.sendMessage(chatId, 'Меню', options.START_OPTIONS);
+        message = await bot.sendMessage(chatId, 'Канал успешно добавлен ' + emoji.white_check_mark);
+        messageIds = [...messageIds, message.message_id];
+
+
+        message = await bot.sendMessage(chatId, 'Меню', {...dataOptions});
+        messageIds = [...messageIds, message.message_id];
+
+        return await UserModel.update({state: 1, deleteMessageIds: messageIds}, { where: {chatId: chatId}});
     }
-    return await bot.sendMessage(chatId, 'Меню',
-        options.START_OPTIONS);
+
+    await bot.editMessageText( 'Меню', {...dataOptions, chat_id: chatId, message_id: editMessageId} );
+    return await UserModel.update({state: 1}, { where: {chatId: chatId}});
 }
 
-const addChannel = async (chatId, bot) => {
+const addChannel = async (chatId, bot, editMessageId) => {
     try {
-        store.state_pos = 2;
+        const optionData = getRevokeOption(editMessageId);
+        console.log('>>> addChannel is called');
+        await bot.editMessageText('Пришли ссылку на канал', {...optionData, chat_id: chatId, message_id: editMessageId} );
         await User.update({state: 2}, { where: {chatId: chatId}});
-
-        await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME);
     } catch (e) {
         console.log('>>> err addChannel', e.message);
     }
 }
 
-const getMyChannels = async (chatId, bot, UserModel, ChannelModel) => {
+const getMyChannels = async (chatId, bot, deleteMessageIds, UserModel, ChannelModel) => {
     try {
-        store.state_pos = 3;
-        await UserModel.update({state: 3}, { where: {chatId: chatId}});
+        console.log('>>> getMyChannels is called');
+        if (deleteMessageIds?.length) {
+            await bot.editMessageText(chatId, bot, deleteMessageIds);
+        }
+
 
         await fillChannels(chatId, ChannelModel);
-        await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
+        const message = await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
+        await UserModel.update({state: 3, deleteMessageIds: [message.message_id]}, { where: {chatId: chatId}});
     } catch (e) {
         console.log('>>> err getMyChannels', e.message);
     }
@@ -63,7 +74,7 @@ const getMyChannels = async (chatId, bot, UserModel, ChannelModel) => {
 
 const selectChannel = async (chatId, bot) => {
     try {
-        store.state_pos = 4;
+        console.log('>>> selectChannel is called');
         await User.update({state: 4}, { where: {chatId: chatId}});
 
         const firstDate = dayjs().format('DD.MM.YYYY');

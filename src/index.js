@@ -6,7 +6,7 @@ const fetch = require('node-fetch');
 
 
 const {checkCorrectTime, checkValidTime, viewValidTime, partFreeHandler, channelLinkHandler, checkValidDate,
-    formateDate, countChannelPlacesHandler
+    formateDate, countChannelPlacesHandler, removeMessages, editMessage
 } = require("./utils");
 const {addRemoteChannel, postRemotePlace, checkInfoTookPlaces, postRemoteFreePlace, postRemoteSelectedChannelInUser,
     postRemoteSelectedTimeInUser, postRemoteOrderCostInUser, postRemoteOrderCommentInUser
@@ -50,15 +50,18 @@ let selectedPart = '';
 
 let infoTookPlaces = '';
 
-const commandHandler = async (command, chatId) => {
+const commandHandler = async (command, chatId, messageId) => {
     try {
+        if (TG_COMMANDS.hasOwnProperty(command)) {
+            await removeMessages(chatId, bot, [messageId]);
+        }
+
         switch (command) {
             case "/start": {
                 console.log('>>> start');
+                const user = await UserModel.findOne({where: {chatId: chatId}});
 
-                const isUser = !!(await UserModel.findOne({where: {chatId: chatId}}));
-
-                if (!isUser) {
+                if (!user) {
                     await UserModel.create({chatId}).then((res) => console.log('success', res.toJSON()))
                         .catch((err) => console.log('err =', err))
                 }
@@ -68,7 +71,7 @@ const commandHandler = async (command, chatId) => {
             }
             case "/menu": {
                 console.log('>>> get menu');
-                await getMenu(chatId, bot, UserModel);
+                await getMenu(chatId, bot, UserModel, null, messageId);
                 break;
             }
             case "/info": {
@@ -78,12 +81,25 @@ const commandHandler = async (command, chatId) => {
             }
             case "/my_channels": {
                 console.log('>>> my channels');
-                await getMyChannels(chatId, bot, UserModel, ChannelModel);
+                const User = await UserModel.findOne({where: {chatId}});
+                if (!User) {
+                    break;
+                }
+                await getMyChannels(chatId, bot, User?.deleteMessageIds, UserModel, ChannelModel);
                 break;
             }
             case "/add_channel": {
                 console.log('>>> add channel');
-                await addChannel(chatId, bot);
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (!User) {
+                        break;
+                    }
+                    await addChannel(chatId, bot, User.deleteMessageIds[0]);
+                }
+
+
+                await addChannel(chatId, bot, messageId);
                 break;
             }
             case "/near": {
@@ -177,7 +193,7 @@ const start = async () => {
             console.log('>>>> userState =', userState);
 
             if (TG_COMMANDS.hasOwnProperty(text)) {
-                return await commandHandler(TG_COMMANDS[text], chatId);
+                return await commandHandler(TG_COMMANDS[text], chatId, msg.message_id);
             }
 
             if (userState === '2') {
@@ -211,7 +227,7 @@ const start = async () => {
                     if (!countChannelPlacesHandler(text)) { return await bot.sendMessage(chatId, 'Пришли кол-во рекалмных мест (до 10)', options.TIME)}
 
                     await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
-                    return await addRemoteChannel(text, chatId, UserModel, ChannelModel, bot);
+                    return await addRemoteChannel(text, chatId, user?.deleteMessageIds, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
                     await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
@@ -264,13 +280,26 @@ const start = async () => {
     })
 
     bot.on('callback_query', async (msg) => {
-        console.log('>>> state position =', store.state_pos);
         const data = msg.data;
         const chatId = msg.message.chat.id;
+        console.log('123')
 
         if (Object.values(data)[0] === '/') {
             return await commandHandler(data, chatId);
         }
+
+        try {
+            const testParseData = JSON.parse(data);
+            console.log('testParseData =', testParseData)
+            if (testParseData?.toPage && testParseData.editMessageId) {
+                return await commandHandler(testParseData.toPage, chatId, testParseData.editMessageId);
+            }
+
+
+        } catch (e) {
+            console.log('e callback_query =', e.message);
+        }
+
 
         let parsedData = '';
         try {
@@ -284,6 +313,10 @@ const start = async () => {
                 await redirectToPrevPage(data, chatId, bot, UserModel, ChannelModel);
                 parsedData = data;
             }
+        }
+
+        if (parsedData.editMessageId) {
+            await commandHandler('/menu', chatId, parsedData.editMessageId);
         }
 
         if (parsedData.channel_id) {

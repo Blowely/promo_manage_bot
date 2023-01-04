@@ -4,13 +4,13 @@ const {getMenu} = require("./objectLocalService");
 const {DATE_MATCH, parts} = require("../constants");
 const {checkValidTime} = require("../utils");
 
-const addRemoteChannel = (name, chatId, UserModel, ChannelModel, bot) => {
+const addRemoteChannel = (name, chatId, deleteMessageIds, UserModel, ChannelModel, bot) => {
     const condition = {chatId: chatId};
 
     return upsert(name, condition, UserModel, ChannelModel).then(async (res) => {
         console.log('success', JSON.stringify(res));
         await fillChannels(chatId, ChannelModel)
-        await getMenu(chatId, bot, UserModel, {success: true});
+        await getMenu(chatId, bot, deleteMessageIds, UserModel, {success: true});
     }).catch((err) => console.log('err1 =', err));
 }
 

@@ -36,11 +36,8 @@ const getUserChannels = async (chatId, ChannelModel) => {
     try {
         const channels = [];
 
-
         if (chatId) {
-            console.log('ChannelModel =', ChannelModel);
             const userChannels = await ChannelModel.findAll({where:{chatId: chatId}});
-            console.log('>>> userChannels =', userChannels);
             return userChannels;
         }
 
