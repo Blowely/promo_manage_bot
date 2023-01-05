@@ -56,17 +56,14 @@ const addChannel = async (chatId, bot, editMessageId) => {
     }
 }
 
-const getMyChannels = async (chatId, bot, deleteMessageIds, UserModel, ChannelModel) => {
+const getMyChannels = async (chatId, bot, editMessageId, UserModel, ChannelModel) => {
     try {
         console.log('>>> getMyChannels is called');
-        if (deleteMessageIds?.length) {
-            await bot.editMessageText(chatId, bot, deleteMessageIds);
-        }
 
 
-        await fillChannels(chatId, ChannelModel);
-        const message = await bot.sendMessage(chatId, 'Выбери где нужно занять место', options.CHANNELS);
-        await UserModel.update({state: 3, deleteMessageIds: [message.message_id]}, { where: {chatId: chatId}});
+        await fillChannels(chatId, ChannelModel, editMessageId);
+        await bot.editMessageText( 'Выбери где нужно занять место', {...options.CHANNELS, chat_id: chatId, message_id: editMessageId});
+        await UserModel.update({state: 3}, { where: {chatId: chatId}});
     } catch (e) {
         console.log('>>> err getMyChannels', e.message);
     }

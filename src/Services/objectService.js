@@ -47,11 +47,8 @@ const getUserChannels = async (chatId, ChannelModel) => {
     }
 }
 
-const fillChannels = async (chatId, ChannelModel) => {
+const fillChannels = async (chatId, ChannelModel, messageId) => {
     try {
-        const orders = await Order.findAll();
-        console.log('>>> orders =', orders);
-
         options.CHANNELS.reply_markup = JSON.stringify({
             inline_keyboard: []
         })
@@ -75,7 +72,7 @@ const fillChannels = async (chatId, ChannelModel) => {
         options.CHANNELS.reply_markup = JSON.stringify({
             inline_keyboard: [
                 ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                [{text: emoji.arrow_left + 'Назад', callback_data: 'cancel'}]
+                [{text: emoji.arrow_left + 'Назад', callback_data: JSON.stringify({toPage: "/menu", editMessageId: messageId})}]
             ]
         });
 

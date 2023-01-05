@@ -5,9 +5,12 @@ const getStartOptionsWithMessageId = (messageId) => {
     return {
         reply_markup: JSON.stringify({
             inline_keyboard: [
-                [{text: emoji.scroll + "Мои каналы", callback_data: "/my_channels"},{text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON.stringify(
-                    {toPage: "/add_channel", editMessageId: messageId})
-                }],
+                [
+                    {text: emoji.scroll + "Мои каналы", callback_data: JSON.stringify(
+                    {toPage: "/my_channels", editMessageId: messageId})},
+                    {text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON.stringify(
+                    {toPage: "/add_channel", editMessageId: messageId})}
+                ],
                 [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
             ]
         })

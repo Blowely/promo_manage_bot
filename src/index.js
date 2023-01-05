@@ -66,6 +66,10 @@ const commandHandler = async (command, chatId, messageId) => {
                         .catch((err) => console.log('err =', err))
                 }
 
+                if (user?.deleteMessageIds.length) {
+                    await removeMessages(chatId, bot, user.deleteMessageIds);
+                }
+
                 await startBot(chatId, bot, UserModel, ChannelModel);
                 break;
             }
@@ -81,25 +85,27 @@ const commandHandler = async (command, chatId, messageId) => {
             }
             case "/my_channels": {
                 console.log('>>> my channels');
-                const User = await UserModel.findOne({where: {chatId}});
-                if (!User) {
-                    break;
+                let localMessageId = messageId;
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (User) {
+                        localMessageId = User.deleteMessageIds[0];
+                    }
                 }
-                await getMyChannels(chatId, bot, User?.deleteMessageIds, UserModel, ChannelModel);
+                await getMyChannels(chatId, bot, localMessageId, UserModel, ChannelModel);
                 break;
             }
             case "/add_channel": {
                 console.log('>>> add channel');
+                let localMessageId = messageId;
                 if (!messageId) {
                     const User = await UserModel.findOne({where: {chatId}});
-                    if (!User) {
-                        break;
+                    if (User) {
+                        localMessageId = User.deleteMessageIds[0];
                     }
-                    await addChannel(chatId, bot, User.deleteMessageIds[0]);
                 }
 
-
-                await addChannel(chatId, bot, messageId);
+                await addChannel(chatId, bot, localMessageId);
                 break;
             }
             case "/near": {
