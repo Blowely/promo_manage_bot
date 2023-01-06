@@ -23,7 +23,10 @@ const parts = [
     'evening'
 ]
 
+const NOT_MODIFIED_ERROR = 'ETELEGRAM: 400 Bad Request: message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message';
+
 module.exports.TG_COMMANDS = TG_COMMANDS;
 module.exports.FAST_TIME = FAST_TIME;
 module.exports.DATE_MATCH = DATE_MATCH;
 module.exports.parts = parts;
+module.exports.NOT_MODIFIED_ERROR = NOT_MODIFIED_ERROR;

@@ -19,7 +19,7 @@ const moment = require("moment");
 const dayjs = require("dayjs");
 require('dayjs/locale/ru');
 const {selectedTimeHandler, selectedPartHandler, getNearestPlaces, addCost, addComment} = require("./Services/objectLocalService");
-const {FAST_TIME, DATE_MATCH} = require("./constants");
+const {FAST_TIME, DATE_MATCH, NOT_MODIFIED_ERROR} = require("./constants");
 const {fillChannels} = require("./Services/objectService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
@@ -213,38 +213,50 @@ const start = async () => {
                     }
 
                     await UserModel.update({selectedLink: text, state: 2.1}, {where: {chatId}});
-                    return await bot.editMessageText('Отлично! Теперь пришли название канала', revokeOptions);
+                    return await bot.editMessageText('Отлично! Теперь пришли название канала (до 255 символов)', revokeOptions);
                 } catch (e) {
                     console.log('e userState === 2', e.message);
-                    await bot.editMessageText(chatId, 'Что-то пошло не так, перезапустите бота', revokeOptions)
+                    if (e.message === NOT_MODIFIED_ERROR) {
+                        await bot.editMessageText('Невалидная ссылка. Пришли ссылку на канал', revokeOptions);
+                    } else {
+                        await bot.editMessageText('Что-то пошло не так, перезапустите бота', revokeOptions)
+                    }
                 }
             }
 
             if (userState === '2.1') {
                 try {
-                    if (!text) {
-                        return await bot.editMessageText('Пришли название канала', revokeOptions);
+                    if (!text || text?.length > 255) {
+                        return await bot.editMessageText('Пришли название канала (до 255 символов)', revokeOptions);
                     }
 
                     await UserModel.update({state: 2.2, selectedChannelName: text}, {where: {chatId}});
-                    return await bot.editMessageText('Отлично! Теперь пришли кол-во рекалмных мест (до 10)', revokeOptions);
+                    return await bot.editMessageText('Отлично! Теперь пришли кол-во рекламных мест (до 10)', revokeOptions);
                 } catch (e) {
                     console.log('e userState === 2.1', e.message);
-                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота', revokeOptions);
+                    if (e.message === NOT_MODIFIED_ERROR) {
+                        await bot.editMessageText( 'Пришли название канала (до 255 символов)', revokeOptions);
+                    } else {
+                        await bot.editMessageText('Что-то пошло не так, перезапустите бота', revokeOptions)
+                    }
                 }
             }
 
             if (userState === '2.2') {
                 try {
                     if (!countChannelPlacesHandler(text)) {
-                        return await bot.editMessageText('Пришли кол-во рекалмных мест (до 10)', revokeOptions)
+                        return await bot.editMessageText('Пришли кол-во рекламных мест (до 10)', revokeOptions)
                     }
 
                     await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
                     return await addRemoteChannel(text, chatId, user?.editMessageIds, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
-                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота', revokeOptions)
+                    if (e.message === NOT_MODIFIED_ERROR) {
+                        await bot.editMessageText( 'Пришли кол-во рекламных мест (до 10)', revokeOptions);
+                    } else {
+                        await bot.editMessageText('Что-то пошло не так, перезапустите бота', revokeOptions)
+                    }
                 }
             }
 
