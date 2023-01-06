@@ -14,7 +14,7 @@ const User = sequelize.define('user', {
     selectedLink: {type: DataTypes.STRING(1000)},
     selectedCountPlaces: {type: DataTypes.STRING(1000)},
     selectedChannelName: {type: DataTypes.STRING(1000)},
-    deleteMessageIds: {type: DataTypes.ARRAY(DataTypes.INTEGER)},
+    editMessageIds: {type: DataTypes.ARRAY(DataTypes.INTEGER)},
     state: DataTypes.STRING,
 }, {
     freezeTableName: true,

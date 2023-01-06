@@ -66,8 +66,8 @@ const commandHandler = async (command, chatId, messageId) => {
                         .catch((err) => console.log('err =', err))
                 }
 
-                if (user?.deleteMessageIds.length) {
-                    await removeMessages(chatId, bot, user.deleteMessageIds);
+                if (user?.editMessageIds.length) {
+                    await removeMessages(chatId, bot, user.editMessageIds);
                 }
 
                 await startBot(chatId, bot, UserModel, ChannelModel);
@@ -89,7 +89,7 @@ const commandHandler = async (command, chatId, messageId) => {
                 if (!messageId) {
                     const User = await UserModel.findOne({where: {chatId}});
                     if (User) {
-                        localMessageId = User.deleteMessageIds[0];
+                        localMessageId = User.editMessageIds[0];
                     }
                 }
                 await getMyChannels(chatId, bot, localMessageId, UserModel, ChannelModel);
@@ -101,7 +101,7 @@ const commandHandler = async (command, chatId, messageId) => {
                 if (!messageId) {
                     const User = await UserModel.findOne({where: {chatId}});
                     if (User) {
-                        localMessageId = User.deleteMessageIds[0];
+                        localMessageId = User.editMessageIds[0];
                     }
                 }
 
@@ -233,7 +233,7 @@ const start = async () => {
                     if (!countChannelPlacesHandler(text)) { return await bot.sendMessage(chatId, 'Пришли кол-во рекалмных мест (до 10)', options.TIME)}
 
                     await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
-                    return await addRemoteChannel(text, chatId, user?.deleteMessageIds, UserModel, ChannelModel, bot);
+                    return await addRemoteChannel(text, chatId, user?.editMessageIds, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
                     await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
@@ -300,8 +300,6 @@ const start = async () => {
             if (testParseData?.toPage && testParseData.editMessageId) {
                 return await commandHandler(testParseData.toPage, chatId, testParseData.editMessageId);
             }
-
-
         } catch (e) {
             console.log('e callback_query =', e.message);
         }
@@ -319,10 +317,6 @@ const start = async () => {
                 await redirectToPrevPage(data, chatId, bot, UserModel, ChannelModel);
                 parsedData = data;
             }
-        }
-
-        if (parsedData.editMessageId) {
-            await commandHandler('/menu', chatId, parsedData.editMessageId);
         }
 
         if (parsedData.channel_id) {

@@ -80,11 +80,11 @@ const countChannelPlacesHandler = (count) => {
     return (count > 0 && count <= 10);
 }
 
-const removeMessages = async (chatId, bot, deleteMessageIds) => {
+const removeMessages = async (chatId, bot, editMessageIds) => {
     try {
         console.log('>>> removeMessages is called')
-        if (deleteMessageIds?.length) {
-            for (let messageId of deleteMessageIds) {
+        if (editMessageIds?.length) {
+            for (let messageId of editMessageIds) {
                 await bot.deleteMessage(chatId, messageId);
             }
         }

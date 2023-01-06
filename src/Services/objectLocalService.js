@@ -16,7 +16,7 @@ const startBot = async (chatId, bot, UserModel, ChannelModel) => {
         const message = await bot.sendMessage(chatId, 'Привет! Моя цель - автоматизировать твою ручную работу по управлению информацией о рекламе в твоем канале',
             options.START_OPTIONS);
 
-        await UserModel.update({state: 1, deleteMessageIds: [message.message_id]}, { where: {chatId: chatId}});
+        await UserModel.update({state: 1, editMessageIds: [message.message_id]}, { where: {chatId: chatId}});
         return await fillChannels(chatId, ChannelModel);
     } catch (e) {
         console.log('e1 =',e);
@@ -38,7 +38,7 @@ const getMenu = async (chatId, bot, UserModel, option, editMessageId) => {
         message = await bot.sendMessage(chatId, 'Меню', {...dataOptions});
         messageIds = [...messageIds, message.message_id];
 
-        return await UserModel.update({state: 1, deleteMessageIds: messageIds}, { where: {chatId: chatId}});
+        return await UserModel.update({state: 1, editMessageIds: messageIds}, { where: {chatId: chatId}});
     }
 
     await bot.editMessageText( 'Меню', {...dataOptions, chat_id: chatId, message_id: editMessageId} );
@@ -59,8 +59,6 @@ const addChannel = async (chatId, bot, editMessageId) => {
 const getMyChannels = async (chatId, bot, editMessageId, UserModel, ChannelModel) => {
     try {
         console.log('>>> getMyChannels is called');
-
-
         await fillChannels(chatId, ChannelModel, editMessageId);
         await bot.editMessageText( 'Выбери где нужно занять место', {...options.CHANNELS, chat_id: chatId, message_id: editMessageId});
         await UserModel.update({state: 3}, { where: {chatId: chatId}});

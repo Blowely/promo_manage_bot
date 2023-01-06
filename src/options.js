@@ -75,7 +75,7 @@ const getRevokeOption = (editMessageId) => {
     return {
         reply_markup: JSON.stringify({
             inline_keyboard: [
-                [{text: emoji.no_entry_sign + "Отмена", callback_data: JSON.stringify({editMessageId: editMessageId})}]
+                [{text: emoji.no_entry_sign + "Отмена", callback_data: JSON.stringify({toPage: "/menu", editMessageId: editMessageId})}]
             ]
         })
     }
