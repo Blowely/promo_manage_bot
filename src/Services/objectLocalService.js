@@ -25,23 +25,11 @@ const startBot = async (chatId, bot, UserModel, ChannelModel) => {
 
 const getMenu = async (chatId, bot, UserModel, option, editMessageId) => {
     console.log('>>> getMenuFunc is called');
-    let messageIds = [];
-    let message = undefined;
+    let text = option?.success ? 'Канал успешно добавлен ' + emoji.white_check_mark + '\nМеню' : 'Меню';
 
     const dataOptions = getStartOptionsWithMessageId(editMessageId)
 
-    if (option?.success) {
-        message = await bot.sendMessage(chatId, 'Канал успешно добавлен ' + emoji.white_check_mark);
-        messageIds = [...messageIds, message.message_id];
-
-
-        message = await bot.sendMessage(chatId, 'Меню', {...dataOptions});
-        messageIds = [...messageIds, message.message_id];
-
-        return await UserModel.update({state: 1, editMessageIds: messageIds}, { where: {chatId: chatId}});
-    }
-
-    await bot.editMessageText( 'Меню', {...dataOptions, chat_id: chatId, message_id: editMessageId} );
+    await bot.editMessageText(text, {...dataOptions, chat_id: chatId, message_id: editMessageId} );
     return await UserModel.update({state: 1}, { where: {chatId: chatId}});
 }
 

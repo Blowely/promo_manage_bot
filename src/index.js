@@ -26,6 +26,7 @@ const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
 const options = require('./options');
 const {emoji} = require("node-emoji");
+const {logger} = require("sequelize/lib/utils/logger");
 
 const startBot = require('./Services/objectLocalService').startBot;
 const getMenu = require('./Services/objectLocalService').getMenu;
@@ -191,10 +192,14 @@ const start = async () => {
         try {
             const text = msg.text;
             const chatId = msg.chat.id;
+            const messageId = msg.message_id;
+            console.log('msg =', msg);
+
+            await bot.deleteMessage(chatId, messageId);
 
             const user = await UserModel.findOne({where: {chatId}});
-            console.log('>>> userMessage =', user);
             const userState = user?.state;
+            const editMessageIds = user?.editMessageIds;
 
             console.log('>>>> userState =', userState);
 
@@ -204,27 +209,33 @@ const start = async () => {
 
             if (userState === '2') {
                 try {
-                    const res = channelLinkHandler(text);
-
-                    if (!res) { return await bot.sendMessage(chatId, 'Пришли ссылку на канал', options.TIME)}
+                    if (!channelLinkHandler(text)) {
+                        return await bot.editMessageText('Невалидная ссылка. Пришли ссылку на канал',
+                            {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                    }
 
                     await UserModel.update({selectedLink: text, state: 2.1}, {where: {chatId}});
-                    return await bot.sendMessage(chatId,  'Отлично! Теперь пришли название канала', options.TIME);
+                    return await bot.editMessageText('Отлично! Теперь пришли название канала',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]});
                 } catch (e) {
                     console.log('e userState === 2', e.message);
-                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                    await bot.editMessageText(chatId, 'Что-то пошло не так, перезапустите бота',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
                 }
             }
 
             if (userState === '2.1') {
                 try {
-                    if (!text) { return await bot.sendMessage(chatId, 'Пришли название канала', options.TIME)}
+                    if (!text) { return await bot.editMessageText('Пришли название канала',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})}
 
                     await UserModel.update({state: 2.2, selectedChannelName: text}, {where: {chatId}});
-                    return await bot.sendMessage(chatId,  'Отлично! Теперь пришли кол-во рекалмных мест (до 10)', options.TIME);
+                    return await bot.editMessageText('Отлично! Теперь пришли кол-во рекалмных мест (до 10)',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]});
                 } catch (e) {
                     console.log('e userState === 2.1', e.message);
-                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
                 }
             }
 
@@ -236,32 +247,46 @@ const start = async () => {
                     return await addRemoteChannel(text, chatId, user?.editMessageIds, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
-                    await bot.sendMessage(chatId, 'Что-то пошло не так', options.TIME)
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
                 }
             }
 
             if (userState === '4') {
-                const res = checkValidDate(text);
+                try {
+                    const res = checkValidDate(text);
 
-                if (!res) { return await commandHandler('/select_channel', chatId)}
+                    if (!res) { return await commandHandler('/select_channel', chatId)}
 
-                const formatedDate = formateDate(text);
-                console.log('>>> formDate =', formatedDate);
-                await User.update({selectedDate: formatedDate}, { where: {chatId: chatId}});
-                return await commandHandler('/select_place', chatId);
+                    const formatedDate = formateDate(text);
+                    console.log('>>> formDate =', formatedDate);
+                    await User.update({selectedDate: formatedDate}, { where: {chatId: chatId}});
+                    return await commandHandler('/select_place', chatId);
+                } catch (e) {
+                    console.log('e userState === 4', e.message);
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                }
             }
 
             if (userState === '6') {
-                if (checkCorrectTime(text) && checkValidTime(text, selectedPart)) {
-                    selectedTime = text;
-                    await postRemoteSelectedTimeInUser(selectedTime, chatId);
-                    console.log('>>> hrere');
-                    return await commandHandler('/view_total', chatId)
-                } else {
-                    await bot.sendMessage(chatId,
-                        'Не верно указано время, укажи время в промежутке: от ' + viewValidTime(selectedPart));
-                    return await commandHandler('/select_time', chatId)
+                try {
+                    if (checkCorrectTime(text) && checkValidTime(text, selectedPart)) {
+                        selectedTime = text;
+                        await postRemoteSelectedTimeInUser(selectedTime, chatId);
+                        console.log('>>> hrere');
+                        return await commandHandler('/view_total', chatId)
+                    } else {
+                        await bot.sendMessage(chatId,
+                            'Не верно указано время, укажи время в промежутке: от ' + viewValidTime(selectedPart));
+                        return await commandHandler('/select_time', chatId)
+                    }
+                } catch (e) {
+                    console.log('e userState === 6', e.message);
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
+                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
                 }
+
             }
 
             if (userState === '9') {
@@ -275,11 +300,8 @@ const start = async () => {
             }
 
             if (!TG_COMMANDS.hasOwnProperty(text)) {
-                await bot.sendMessage(chatId, 'Я тебя не понимаю');
-                return;
+                return await bot.deleteMessage(chatId, messageId);
             }
-
-
         } catch (e) {
             //return await bot.sendMessage(chatId, 'Произошла какая-то ошибочка!' + e);
         }
