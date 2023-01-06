@@ -93,17 +93,8 @@ const removeMessages = async (chatId, bot, editMessageIds) => {
     }
 }
 
-const editMessage = async (chatId, bot, editMessageId) => {
-    try {
-        console.log('>>> editMessage is called')
-        if (editMessageId?.length) {
-            const res = await bot.editMessageText('sdcds', {...options.START_OPTIONS, chat_id: chatId, message_id: editMessageId[0]} );
-            console.log('>>> res =', res);
-            return res;
-        }
-    } catch (e) {
-        console.log('e editMessage =', e.message);
-    }
+const editMessage = async (chatId, text, options, bot, editMessageId) => {
+    return await bot.editMessageText(text, {...options, chat_id: chatId, message_id: editMessageId})
 }
 
 module.exports.checkCorrectTime = checkCorrectTime;

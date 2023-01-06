@@ -193,7 +193,6 @@ const start = async () => {
             const text = msg.text;
             const chatId = msg.chat.id;
             const messageId = msg.message_id;
-            console.log('msg =', msg);
 
             await bot.deleteMessage(chatId, messageId);
 
@@ -201,7 +200,7 @@ const start = async () => {
             const userState = user?.state;
             const editMessageIds = user?.editMessageIds;
 
-            console.log('>>>> userState =', userState);
+            const revokeOptions = {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]};
 
             if (TG_COMMANDS.hasOwnProperty(text)) {
                 return await commandHandler(TG_COMMANDS[text], chatId, msg.message_id);
@@ -210,45 +209,42 @@ const start = async () => {
             if (userState === '2') {
                 try {
                     if (!channelLinkHandler(text)) {
-                        return await bot.editMessageText('Невалидная ссылка. Пришли ссылку на канал',
-                            {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                        return await bot.editMessageText('Невалидная ссылка. Пришли ссылку на канал', revokeOptions)
                     }
 
                     await UserModel.update({selectedLink: text, state: 2.1}, {where: {chatId}});
-                    return await bot.editMessageText('Отлично! Теперь пришли название канала',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]});
+                    return await bot.editMessageText('Отлично! Теперь пришли название канала', revokeOptions);
                 } catch (e) {
                     console.log('e userState === 2', e.message);
-                    await bot.editMessageText(chatId, 'Что-то пошло не так, перезапустите бота',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                    await bot.editMessageText(chatId, 'Что-то пошло не так, перезапустите бота', revokeOptions)
                 }
             }
 
             if (userState === '2.1') {
                 try {
-                    if (!text) { return await bot.editMessageText('Пришли название канала',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})}
+                    if (!text) {
+                        return await bot.editMessageText('Пришли название канала', revokeOptions);
+                    }
 
                     await UserModel.update({state: 2.2, selectedChannelName: text}, {where: {chatId}});
-                    return await bot.editMessageText('Отлично! Теперь пришли кол-во рекалмных мест (до 10)',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]});
+                    return await bot.editMessageText('Отлично! Теперь пришли кол-во рекалмных мест (до 10)', revokeOptions);
                 } catch (e) {
                     console.log('e userState === 2.1', e.message);
-                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота', revokeOptions);
                 }
             }
 
             if (userState === '2.2') {
                 try {
-                    if (!countChannelPlacesHandler(text)) { return await bot.sendMessage(chatId, 'Пришли кол-во рекалмных мест (до 10)', options.TIME)}
+                    if (!countChannelPlacesHandler(text)) {
+                        return await bot.editMessageText('Пришли кол-во рекалмных мест (до 10)', revokeOptions)
+                    }
 
                     await UserModel.update({state: 2, selectedCountPlaces: text}, {where: {chatId}});
                     return await addRemoteChannel(text, chatId, user?.editMessageIds, UserModel, ChannelModel, bot);
                 } catch (e) {
                     console.log('e userState === 2.2', e.message);
-                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота', revokeOptions)
                 }
             }
 
@@ -264,8 +260,7 @@ const start = async () => {
                     return await commandHandler('/select_place', chatId);
                 } catch (e) {
                     console.log('e userState === 4', e.message);
-                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота',
-                        {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]})
+                    await bot.editMessageText( 'Что-то пошло не так, перезапустите бота', revokeOptions)
                 }
             }
 
