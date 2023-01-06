@@ -1,4 +1,5 @@
 const TelegramApi = require('node-telegram-bot-api');
+require('dotenv').config()
 const sequelize = require('./db');
 const UserModel = require('./models').User;
 const ChannelModel = require('./models').Channel;
@@ -37,7 +38,7 @@ const selectPlace = require('./Services/objectLocalService').selectPlace;
 const selectTime = require('./Services/objectLocalService').selectTime;
 const view_total = require('./Services/objectLocalService').view_total;
 
-const token = '5463427155:AAGrFdCY4pKDdt-OX7XcOvwEAsyY_daDaFs';
+const token = process.env.TOKEN;
 
 const bot = new TelegramApi(token, {polling: true});
 
@@ -67,9 +68,9 @@ const commandHandler = async (command, chatId, messageId) => {
                         .catch((err) => console.log('err =', err))
                 }
 
-                if (user?.editMessageIds.length) {
+                /*if (user?.editMessageIds.length) {
                     await removeMessages(chatId, bot, user.editMessageIds);
-                }
+                }*/
 
                 await startBot(chatId, bot, UserModel, ChannelModel);
                 break;
@@ -198,7 +199,7 @@ const start = async () => {
 
             const user = await UserModel.findOne({where: {chatId}});
             const userState = user?.state;
-            const editMessageIds = user?.editMessageIds;
+            const editMessageIds = user?.editMessageIds ?? [messageId];
 
             const revokeOptions = {...options.getRevokeOption(editMessageIds[0]), chat_id: chatId, message_id: editMessageIds[0]};
 

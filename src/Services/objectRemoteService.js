@@ -8,7 +8,6 @@ const addRemoteChannel = (name, chatId, editMessageIds, UserModel, ChannelModel,
     const condition = {chatId: chatId};
 
     return upsert(name, condition, UserModel, ChannelModel).then(async (res) => {
-        console.log('success', JSON.stringify(res));
         await fillChannels(chatId, ChannelModel)
         await getMenu(chatId, bot, UserModel, {success: true}, editMessageIds[0]);
     }).catch((err) => console.log('err1 =', err));

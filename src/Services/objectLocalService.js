@@ -19,7 +19,7 @@ const startBot = async (chatId, bot, UserModel, ChannelModel) => {
         await UserModel.update({state: 1, editMessageIds: [message.message_id]}, { where: {chatId: chatId}});
         return await fillChannels(chatId, ChannelModel);
     } catch (e) {
-        console.log('e1 =',e);
+        console.log('e startBot =',e);
     }
 }
 
