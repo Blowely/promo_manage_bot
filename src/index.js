@@ -68,9 +68,9 @@ const commandHandler = async (command, chatId, messageId) => {
                         .catch((err) => console.log('err =', err))
                 }
 
-                /*if (user?.editMessageIds.length) {
+                if (user?.editMessageIds.length) {
                     await removeMessages(chatId, bot, user.editMessageIds);
-                }*/
+                }
 
                 await startBot(chatId, bot, UserModel, ChannelModel);
                 break;
