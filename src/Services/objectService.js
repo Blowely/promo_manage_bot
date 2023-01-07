@@ -62,7 +62,7 @@ const fillChannels = async (chatId, ChannelModel, messageId) => {
                 options.CHANNELS.reply_markup = JSON.stringify({
                     inline_keyboard: [
                         ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
-                        [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.chatId})}]
+                        [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.chatId, editMessageId: messageId})}]
                     ]
                 });
             }

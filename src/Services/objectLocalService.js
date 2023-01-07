@@ -55,7 +55,7 @@ const getMyChannels = async (chatId, bot, editMessageId, UserModel, ChannelModel
     }
 }
 
-const selectChannel = async (chatId, bot) => {
+const selectChannel = async (chatId, bot, messageId) => {
     try {
         console.log('>>> selectChannel is called');
         await User.update({state: 4}, { where: {chatId: chatId}});
@@ -64,13 +64,15 @@ const selectChannel = async (chatId, bot) => {
         const secDate = dayjs().format('DD/MM/YYYY');
         const thirdDate = dayjs().format('DD-MM-YYYY');
 
-        await bot.sendMessage(chatId, "Выбери кнопкой дату или пришли сюда в одном из форматов: "+ firstDate +", "+ secDate +", "+ thirdDate +"", options.DATE);
+        const text = "Выбери кнопкой дату или пришли сюда в одном из форматов: "+ firstDate +", "+ secDate +", "+ thirdDate +""
+
+        await bot.editMessageText(text,{...options.getDateWithMessageId(messageId), chat_id: chatId, message_id: messageId});
     } catch (e) {
         console.log('>>> err selectChannel', e.message);
     }
 }
 
-const selectPlace = async (dataTookPlaces, chatId, bot, success = false) => {
+const selectPlace = async (dataTookPlaces, chatId, bot, messageId, success = false) => {
     try {
         if (success) {
             await bot.sendMessage(chatId, 'Пост успешно занят!' + emoji.white_check_mark);

@@ -21,7 +21,6 @@ const dayjs = require("dayjs");
 require('dayjs/locale/ru');
 const {selectedTimeHandler, selectedPartHandler, getNearestPlaces, addCost, addComment} = require("./Services/objectLocalService");
 const {FAST_TIME, DATE_MATCH, NOT_MODIFIED_ERROR} = require("./constants");
-const {fillChannels} = require("./Services/objectService");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
 const store = require('./store').store;
@@ -117,7 +116,7 @@ const commandHandler = async (command, chatId, messageId) => {
             }
             case "/select_channel": {
                 console.log('>>> select channel');
-                await selectChannel(chatId, bot);
+                await selectChannel(chatId, bot, messageId);
                 break;
             }
             case "/select_place": {
@@ -126,7 +125,7 @@ const commandHandler = async (command, chatId, messageId) => {
                     const user = await User.findOne({ where: {chatId: chatId}});
                     const dataTookPlaces = await checkInfoTookPlaces(user.selectedChannel, user.selectedDate, chatId, bot);
 
-                    await selectPlace(dataTookPlaces, chatId, bot);
+                    await selectPlace(dataTookPlaces, chatId, bot, messageId);
                     break;
                 } catch (e) {
                     console.log('e =', e);
@@ -149,7 +148,7 @@ const commandHandler = async (command, chatId, messageId) => {
                 await postRemotePlace(selectedChannel, selectedDay, selectedPart, selectedTime, bot, chatId);
                 const user = await User.findOne({ where: {chatId: chatId}});
                 const dataTookPlaces = await checkInfoTookPlaces(user.selectedChannel, user.selectedDate, chatId, bot);
-                await selectPlace(dataTookPlaces, chatId, bot, true);
+                await selectPlace(dataTookPlaces, chatId, bot, messageId, true);
                 break;
             }
             case "/add_cost": {
@@ -349,23 +348,23 @@ const start = async () => {
             }
         }
 
-        if (parsedData.channel_id) {
+        if (parsedData?.channel_id) {
             selectedChannel = parsedData.channel_id
             const channel = await Channel.findOne({ where: {chatId: selectedChannel} });
             selectedChannelName = channel.name;
             await postRemoteSelectedChannelInUser(selectedChannel, chatId);
-            return await commandHandler('/select_channel', chatId);
+            return await commandHandler('/select_channel', chatId, parsedData?.editMessageId);
         }
 
         if (parsedData.date) {
             selectedDay = parsedData.date;
             await postRemoteSelectedDateInUser(DATE_MATCH[selectedDay], chatId);
-            return await commandHandler('/select_place', chatId);
+            return await commandHandler('/select_place', chatId, parsedData.editMessageId);
         }
 
         if (parsedData.get) {
             selectedPart = selectedPartHandler(parsedData.get);
-            return await commandHandler('/select_time', chatId);
+            return await commandHandler('/select_time', chatId, parsedData.editMessageId);
         }
 
         if (parsedData.get_fast) {

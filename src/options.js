@@ -1,21 +1,19 @@
 const {infoTookPlaces} = require("./index.js");
 const {emoji} = require("node-emoji");
 
-const getStartOptionsWithMessageId = (messageId) => {
-    return {
-        reply_markup: JSON.stringify({
-            inline_keyboard: [
-                [
-                    {text: emoji.scroll + "Мои каналы", callback_data: JSON.stringify(
-                    {toPage: "/my_channels", editMessageId: messageId})},
-                    {text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON.stringify(
-                    {toPage: "/add_channel", editMessageId: messageId})}
-                ],
-                [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
-            ]
-        })
-    }
-}
+const getStartOptionsWithMessageId = (messageId) => ({
+    reply_markup: JSON.stringify({
+        inline_keyboard: [
+            [
+                {text: emoji.scroll + "Мои каналы", callback_data: JSON.stringify(
+                {toPage: "/my_channels", editMessageId: messageId})},
+                {text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON.stringify(
+                {toPage: "/add_channel", editMessageId: messageId})}
+            ],
+            [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
+        ]
+    })
+})
 
 const START_OPTIONS = {
     reply_markup: JSON.stringify({
@@ -31,6 +29,18 @@ const CHANNELS = {
         inline_keyboard: []
     })
 }
+
+const getDateWithMessageId = (messageId) => ({
+    reply_markup: JSON.stringify({
+        inline_keyboard: [
+            [{text:"Сегодня", callback_data: JSON.stringify({date: 'today', editMessageId: messageId})},
+                {text:"Завтра", callback_data: JSON.stringify({date: 'tomorrow', editMessageId: messageId})},
+                {text:"Послезавтра", callback_data: JSON.stringify({date: 'af_tmrw', editMessageId: messageId})}],
+            [{text:emoji.arrow_left + "Назад", callback_data: JSON.stringify({toPage: "/my_channels", editMessageId: messageId})},
+                {text:emoji.grey_question + "Помощь", callback_data: JSON.stringify({toPage: "/help", editMessageId: messageId})}]
+        ]
+    })
+})
 
 const DATE = {
     reply_markup: JSON.stringify({
@@ -116,6 +126,7 @@ module.exports.START_OPTIONS = START_OPTIONS;
 module.exports.getStartOptionsWithMessageId = getStartOptionsWithMessageId;
 module.exports.CHANNELS = CHANNELS;
 module.exports.DATE = DATE;
+module.exports.getDateWithMessageId = getDateWithMessageId;
 module.exports.PLACES_INFO = PLACES_INFO;
 module.exports.placesInfoHandler = placesInfoHandler;
 module.exports.TIME = TIME;
