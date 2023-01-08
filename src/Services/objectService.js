@@ -49,30 +49,30 @@ const getUserChannels = async (chatId, ChannelModel) => {
 
 const fillChannels = async (chatId, ChannelModel, messageId) => {
     try {
-        options.CHANNELS.reply_markup = JSON().stringify({
+        options.CHANNELS.reply_markup = JSON.stringify({
             inline_keyboard: []
         })
 
         const channels = await getUserChannels(chatId, ChannelModel);
 
         if (channels?.length > 0) {
-            options.CHANNELS.reply_markup = JSON().stringify({inline_keyboard: []});
+            options.CHANNELS.reply_markup = JSON.stringify({inline_keyboard: []});
 
             for (const channel of channels) {
-                options.CHANNELS.reply_markup = JSON().stringify({
+                options.CHANNELS.reply_markup = JSON.stringify({
                     inline_keyboard: [
-                        ...JSON().parse(options.CHANNELS.reply_markup).inline_keyboard,
-                        [{text: channel.name, callback_data: JSON().stringify({channel_id: channel.chatId, editMessageId: messageId})}]
+                        ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
+                        [{text: channel.name, callback_data: JSON.stringify({channel_id: channel.chatId, editMessageId: messageId})}]
                     ]
                 });
             }
 
         }
 
-        options.CHANNELS.reply_markup = JSON().stringify({
+        options.CHANNELS.reply_markup = JSON.stringify({
             inline_keyboard: [
-                ...JSON().parse(options.CHANNELS.reply_markup).inline_keyboard,
-                [{text: emoji.arrow_left + 'Назад', callback_data: JSON().stringify({toPage: "/menu", editMessageId: messageId})}]
+                ...JSON.parse(options.CHANNELS.reply_markup).inline_keyboard,
+                [{text: emoji.arrow_left + 'Назад', callback_data: JSON.stringify({toPage: "/menu", editMessageId: messageId})}]
             ]
         });
 
