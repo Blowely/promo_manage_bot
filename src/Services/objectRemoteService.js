@@ -51,10 +51,10 @@ const postRemotePlace = async (selectedChannel, selectedDay, selectedPart, selec
             const obj =  {get: selectedPart, time: selectedTime}
 
             if (channel[selectedDay] !== '') {
-                data = '' + channel[selectedDay] + ';' + JSON.stringify(obj) + '';
+                data = '' + channel[selectedDay] + ';' + JSON().stringify(obj) + '';
             } else {
                 console.log('else')
-                data = '' + JSON.stringify(obj) + '';
+                data = '' + JSON().stringify(obj) + '';
             }
 
             const date = DATE_MATCH[selectedDay];

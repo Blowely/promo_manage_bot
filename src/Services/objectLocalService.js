@@ -93,7 +93,7 @@ const selectPlace = async (dataTookPlaces, chatId, bot, messageId, success = fal
             "#2) "+ (dataTookPlaces.day.time ? dataTookPlaces.day.time + ' - занято' : '12:00 - 17:00 - свободно') + "\n" +
             "#3) "+ (dataTookPlaces.evening.time ? dataTookPlaces.evening.time + ' - занято' : '17:00 - 21:59 - свободно') + "\n" +
             "\n" +
-            "Выберите время, чтобы занять его", options.placesInfoHandler(dataTookPlaces));
+            "Выберите время, чтобы занять его", options.placesInfoHandler(dataTookPlaces, messageId));
     } catch (e) {
         console.log('>>> err selectPlace', e.message);
     }

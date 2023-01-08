@@ -324,7 +324,7 @@ const start = async () => {
         }
 
         try {
-            const testParseData = JSON.parse(data);
+            const testParseData = JSON().parse(data);
             console.log('testParseData =', testParseData)
             if (testParseData?.toPage && testParseData.editMessageId) {
                 return await commandHandler(testParseData.toPage, chatId, testParseData.editMessageId);
@@ -336,7 +336,7 @@ const start = async () => {
 
         let parsedData = '';
         try {
-            parsedData = JSON.parse(data);
+            parsedData = JSON().parse(data);
         } catch (e) {
             if (data === 'help') {
                 await bot.sendMessage(chatId, 'По вопросам пиши @in_a_state_of_flux');
