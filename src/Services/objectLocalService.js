@@ -55,6 +55,40 @@ const getMyChannels = async (chatId, bot, editMessageId, UserModel, ChannelModel
     }
 }
 
+const getImportExport = async (chatId, bot, editMessageId, UserModel) => {
+    try {
+        console.log('>>> getImportExport is called');
+        await bot.editMessageText( 'Выбери необходимое действие', {...options.getImportExportOptions(editMessageId), chat_id: chatId, message_id: editMessageId});
+        //TODO what is correct stateNumber
+        await UserModel.update({state: 3}, { where: {chatId: chatId}});
+    } catch (e) {
+        console.log('>>> err getImportExport', e.message);
+    }
+}
+
+const getImport = async (chatId, bot, editMessageId, UserModel) => {
+    try {
+        console.log('>>> getImport is called');
+        await bot.editMessageText( 'Выбери необходимое действие', {...options.getImportOptions(editMessageId), chat_id: chatId, message_id: editMessageId});
+        //TODO what is correct stateNumber
+        await UserModel.update({state: 3}, { where: {chatId: chatId}});
+    } catch (e) {
+        console.log('>>> err getImport', e.message);
+    }
+}
+
+//TODO develop
+const getExport = async (chatId, bot, editMessageId, UserModel) => {
+    try {
+        console.log('>>> getExport is called');
+        await bot.editMessageText( 'Выбери необходимое действие', {...options.getImportOptions(editMessageId), chat_id: chatId, message_id: editMessageId});
+        //TODO what is correct stateNumber
+        await UserModel.update({state: 3}, { where: {chatId: chatId}});
+    } catch (e) {
+        console.log('>>> err getExport', e.message);
+    }
+}
+
 const selectChannel = async (chatId, bot, messageId) => {
     try {
         console.log('>>> selectChannel is called');
@@ -209,6 +243,8 @@ const selectedPartHandler = (part) => {
 module.exports.startBot = startBot;
 module.exports.getMenu = getMenu;
 module.exports.getMyChannels = getMyChannels;
+module.exports.getImportExport = getImportExport;
+module.exports.getImport = getImport;
 module.exports.addChannel = addChannel;
 module.exports.selectChannel = selectChannel;
 module.exports.selectPlace = selectPlace;

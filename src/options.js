@@ -11,7 +11,8 @@ const getStartOptionsWithMessageId = (messageId) => ({
                 {text:emoji.heavy_plus_sign + "Добавить канал", callback_data: JSON().stringify(
                 {toPage: "/add_channel", editMessageId: messageId})}
             ],
-            [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
+            [{text: emoji.date + "Ближайшие места", callback_data: "/near"},
+                {text: emoji.cd + "Импорт/Экспорт данных", callback_data: JSON().stringify({toPage: "/import_export", editMessageId: messageId})}],
         ]
     })
 })
@@ -20,7 +21,7 @@ const START_OPTIONS = {
     reply_markup: JSON().stringify({
         inline_keyboard: [
             [{text: emoji.scroll + "Мои каналы", callback_data: "/my_channels"},{text:emoji.heavy_plus_sign + "Добавить канал", callback_data: "/add_channel"}],
-            [{text: emoji.date + "Ближайшие места", callback_data: "/near"}],
+            [{text: emoji.date + "Ближайшие места", callback_data: "/near"}, {text: emoji.cd + "Импорт/Экспорт данных", callback_data: "/import_export"}],
         ]
     })
 }
@@ -30,6 +31,27 @@ const CHANNELS = {
         inline_keyboard: []
     })
 }
+
+const getImportExportOptions = (messageId) => ({
+    reply_markup: JSON().stringify({
+        inline_keyboard: [
+            [{text:"Импорт", callback_data: JSON().stringify({toPage: '/import', editMessageId: messageId})},
+                {text:"Экспорт", callback_data: JSON().stringify({toPage: '/export', editMessageId: messageId})}],
+            [{text:emoji.arrow_left + "Назад", callback_data: JSON().stringify({toPage: "/menu", editMessageId: messageId})}]
+        ]
+    })
+})
+
+const getImportOptions = (messageId) => ({
+    reply_markup: JSON().stringify({
+        inline_keyboard: [
+            [{text:"Скачать шаблон", callback_data: JSON().stringify({toPage: '/download', editMessageId: messageId})},
+                {text:"Отправить шаблон", callback_data: JSON().stringify({toPage: '/upload', editMessageId: messageId})}],
+            [{text:emoji.arrow_left + "Назад", callback_data: JSON().stringify({toPage: "/import_export", editMessageId: messageId})}]
+        ]
+    })
+})
+
 
 const getDateWithMessageId = (messageId) => ({
     reply_markup: JSON().stringify({
@@ -125,6 +147,8 @@ const TOTAL_INFO = {
 
 module.exports.START_OPTIONS = START_OPTIONS;
 module.exports.getStartOptionsWithMessageId = getStartOptionsWithMessageId;
+module.exports.getImportExportOptions = getImportExportOptions;
+module.exports.getImportOptions = getImportOptions;
 module.exports.CHANNELS = CHANNELS;
 module.exports.DATE = DATE;
 module.exports.getDateWithMessageId = getDateWithMessageId;

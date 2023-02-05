@@ -28,6 +28,7 @@
   "dependencies": {
     "dayjs": "^1.11.4",
     "dotenv": "^16.0.3",
+    "exceljs": "^4.3.0",
     "moment": "^2.29.4",
     "node-emoji": "^1.11.0",
     "node-fetch": "^2.6.7",

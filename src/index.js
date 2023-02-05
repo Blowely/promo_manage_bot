@@ -19,7 +19,7 @@ const {redirectToPrevPage} = require("./Services/redirectHandler");
 const moment = require("moment");
 const dayjs = require("dayjs");
 require('dayjs/locale/ru');
-const {selectedTimeHandler, selectedPartHandler, getNearestPlaces, addCost, addComment} = require("./Services/objectLocalService");
+const {selectedTimeHandler, selectedPartHandler, getNearestPlaces, addCost, addComment, getImportExport, getImport} = require("./Services/objectLocalService");
 const {FAST_TIME, DATE_MATCH, NOT_MODIFIED_ERROR} = require("./constants");
 
 const TG_COMMANDS = require('./constants').TG_COMMANDS;
@@ -112,6 +112,63 @@ const commandHandler = async (command, chatId, messageId) => {
             case "/near": {
                 console.log('>>> get nearest places');
                 await getNearestPlaces(chatId, bot, ChannelModel);
+                break;
+            }
+            case "/import_export": {
+                console.log('>>> get nearest places');
+                let localMessageId = messageId;
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (User) {
+                        localMessageId = User.editMessageIds[0];
+                    }
+                }
+
+                await getImportExport(chatId, bot, localMessageId, UserModel);
+
+                break;
+            }
+            case "/import": {
+                console.log('>>> get import');
+                let localMessageId = messageId;
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (User) {
+                        localMessageId = User.editMessageIds[0];
+                    }
+                }
+
+                await getImport(chatId, bot, localMessageId, UserModel);
+
+                break;
+            }
+            case "/download": {
+                console.log('>>> get download');
+                let localMessageId = messageId;
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (User) {
+                        localMessageId = User.editMessageIds[0];
+                    }
+                }
+                let photo = 'cats.jpg';
+                await bot.sendPhoto(chatId, photo, {caption: 'Lovely kittens'});
+                //await bot.downloadFile('store.js', '.');
+
+                break;
+            }
+            case "/upload": {
+                console.log('>>> get upload');
+                let localMessageId = messageId;
+                if (!messageId) {
+                    const User = await UserModel.findOne({where: {chatId}});
+                    if (User) {
+                        localMessageId = User.editMessageIds[0];
+                    }
+                }
+
+                await getImportExport(chatId, bot, localMessageId, UserModel);
+
                 break;
             }
             case "/select_channel": {
